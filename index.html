@@ -241,11 +241,6 @@
       color: #fff;
     }
 
-    .seed-ap {
-      background: var(--orange);
-      color: #fff;
-    }
-
     .team-name {
       flex: 1;
       font-size: 0.78rem;
@@ -374,6 +369,40 @@
 <script>
   let games = [], tab = 'all', cd = 20, timer;
 
+  // Conference tournament seeds — static for the tournament
+  const CONF_SEEDS = {
+    // ACC
+    'Duke':1,'Virginia':2,'Miami':3,'North Carolina':4,'UNC':4,'Clemson':5,
+    'Louisville':6,'NC State':7,'Florida St':8,'Florida State':8,'Cal':9,'California':9,
+    'Stanford':10,'SMU':11,'Virginia Tech':12,'Va Tech':12,'Wake Forest':13,
+    'Syracuse':14,'Pitt':15,'Pittsburgh':15,'Notre Dame':16,'Boston College':17,'Boston Col':17,
+    'Georgia Tech':18,
+    // Big Ten
+    'Michigan':1,'Illinois':2,'Michigan St':3,'Michigan State':3,'Nebraska':4,'Wisconsin':5,
+    'Purdue':6,'UCLA':7,'Ohio St':8,'Ohio State':8,'Iowa':9,'Indiana':10,'Minnesota':11,
+    'USC':12,'Washington':13,'Rutgers':14,'Northwestern':15,'Oregon':16,'Maryland':17,
+    'Penn St':18,'Penn State':18,
+    // Big 12
+    'Arizona':1,'Houston':2,'Kansas':3,'Texas Tech':4,'Iowa St':5,'Iowa State':5,
+    'TCU':6,'West Virginia':7,'WVU':7,'UCF':8,'Cincinnati':9,'BYU':10,'Colorado':11,
+    'Arizona St':12,'Arizona State':12,'Baylor':13,'Oklahoma St':14,'Oklahoma State':14,
+    'Kansas St':15,'Kansas State':15,'Utah':16,
+    // Big East
+    "St. John's":1,'UConn':2,'Connecticut':2,'Villanova':3,'Seton Hall':4,'Creighton':5,
+    'DePaul':6,'Marquette':7,'Butler':8,'Providence':9,'Xavier':10,'Georgetown':11,
+    // SEC
+    'Florida':1,'Alabama':2,'Arkansas':3,'Vanderbilt':4,'Tennessee':5,'Texas A&M':6,
+    'Georgia':7,'Missouri':8,'Kentucky':9,'Texas':10,'Oklahoma':11,'Auburn':12,
+    'Mississippi St':13,'Mississippi State':13,'Miss State':13,'South Carolina':14,
+    'S Carolina':14,'Ole Miss':15,'LSU':16,
+  };
+
+  function getSeed(competitor) {
+    if (competitor.seed) return parseInt(competitor.seed);
+    const name = competitor.team?.shortDisplayName || competitor.team?.name || '';
+    return CONF_SEEDS[name] || null;
+  }
+
   const statusOf = e => {
     const n = e.status?.type?.name || '';
     if (n === 'STATUS_IN_PROGRESS' || n === 'STATUS_HALFTIME') return 'live';
@@ -426,9 +455,8 @@
     const hWin   = showW && hScore > aScore;
 
     // Upset: higher seed number (worse team) currently leading a live game
-    // Use NCAA tournament seed if available, otherwise AP poll rank
-    const aSeed = away.seed || (away.curatedRank?.current <= 16 ? away.curatedRank.current : null);
-    const hSeed = home.seed || (home.curatedRank?.current <= 16 ? home.curatedRank.current : null);
+    const aSeed = getSeed(away);
+    const hSeed = getSeed(home);
     const seedsValid = aSeed && hSeed && aScore !== hScore;
     const isUpset = status === 'live' && seedsValid &&
       ((aWin && aSeed > hSeed) || (hWin && hSeed > aSeed));
@@ -443,15 +471,9 @@
         ? `<img class="logo" src="${logo}" alt="${abbr}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-abbr" style="display:none">${abbr}</div>`
         : `<div class="logo-abbr">${abbr}</div>`;
 
-      // Seeding: NCAA tournament seed takes priority, then AP poll rank
-      const ncaaSeed = t.seed;
-      const apRank   = t.curatedRank?.current;
-      let seedBadge  = '';
-      if (ncaaSeed && ncaaSeed <= 16) {
-        seedBadge = `<span class="seed-badge seed-ncaa">${ncaaSeed}</span>`;
-      } else if (apRank && apRank <= 25) {
-        seedBadge = `<span class="seed-badge seed-ap">AP</span>`;
-      }
+      // Show tournament seed number (conference lookup or NCAA seed)
+      const seed = getSeed(t);
+      const seedBadge = seed ? `<span class="seed-badge seed-ncaa">${seed}</span>` : '';
 
       return `<div class="team-row ${cls}">${logoEl}${seedBadge}<span class="team-name">${name}</span><span class="team-score">${scoreStr}</span></div>`;
     };
