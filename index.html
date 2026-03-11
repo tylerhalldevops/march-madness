@@ -105,153 +105,264 @@
       min-width: 24px;
     }
 
-    /* ── TICKER TAB ── */
+    /* ── TICKER TAB — full-page stock-market style ── */
     #ticker-view {
       display: none;
       flex-direction: column;
+      background: #0a0e1a;
+      min-height: calc(100vh - 70px);
     }
 
-    .ticker-section-hd {
-      font-size: 0.62rem;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #fff;
-      background: var(--orange);
-      padding: 4px 10px;
-    }
-
-    /* Live ticker rows */
-    .tk-live-row {
+    /* Top label bar */
+    .tk-header {
       display: flex;
       align-items: center;
-      padding: 5px 10px;
-      border-bottom: 1px solid var(--border);
-      background: var(--live-bg);
-      gap: 6px;
+      background: #0a0e1a;
+      border-bottom: 1px solid #1e2a45;
+      padding: 0;
+      height: 28px;
+      flex-shrink: 0;
     }
 
-    .tk-live-row.upset-row { border-left: 3px solid var(--gold); }
-
-    .tk-dot {
-      width: 6px; height: 6px;
+    .tk-header-badge {
       background: var(--live);
-      border-radius: 50%;
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 10px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
       flex-shrink: 0;
+    }
+
+    .tk-header-badge .tk-hd-dot {
+      width: 5px; height: 5px;
+      background: #fff;
+      border-radius: 50%;
       animation: blink 1.2s ease-in-out infinite;
     }
 
-    .tk-teams {
-      flex: 1;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: var(--text);
-      min-width: 0;
+    .tk-header-meta {
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      gap: 10px;
+      font-size: 0.58rem;
+      color: #4a6080;
     }
 
-    .tk-teams .tk-vs { color: var(--muted); font-weight: 400; font-size: 0.62rem; margin: 0 3px; }
+    .tk-header-count { color: #8aa0c0; }
 
-    .tk-scores {
-      font-size: 0.9rem;
+    /* Main scrolling ticker band */
+    .tk-band {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: #0d1220;
+      border-bottom: 2px solid var(--gold);
+      min-height: 56px;
+      position: relative;
+    }
+
+    .tk-band-label {
+      background: var(--gold);
+      color: #0a0e1a;
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0 12px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .tk-scroll-track {
+      flex: 1;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .tk-scroll-inner {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      animation: tk-scroll 40s linear infinite;
+    }
+
+    .tk-scroll-inner:hover { animation-play-state: paused; }
+
+    @keyframes tk-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Individual game chip in the live band */
+    .tk-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 20px;
+      border-right: 1px solid #1e2a45;
+      cursor: default;
+    }
+
+    .tk-chip-teams {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #8aa0c0;
+      letter-spacing: 0.04em;
+    }
+
+    .tk-chip-teams .chip-abbr { color: #c8d8f0; }
+    .tk-chip-teams .chip-sep  { color: #2a3a55; margin: 0 4px; font-weight: 400; }
+
+    .tk-chip-score {
+      font-size: 1.05rem;
       font-weight: 900;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 0.04em;
-      color: var(--blue);
-      white-space: nowrap;
+      letter-spacing: 0.02em;
     }
 
-    .tk-scores .tk-win  { color: var(--blue); }
-    .tk-scores .tk-lose { color: var(--final); }
+    .tk-chip-score .sc-win  { color: #fff; }
+    .tk-chip-score .sc-lose { color: #3a5070; }
+    .tk-chip-score .sc-sep  { color: #2a3a55; margin: 0 2px; }
 
-    .tk-clock {
+    .tk-chip-clock {
       font-size: 0.6rem;
-      color: var(--muted);
+      color: #4a6080;
+      font-variant-numeric: tabular-nums;
       white-space: nowrap;
-      min-width: 60px;
-      text-align: right;
     }
 
-    /* Upcoming ticker rows */
-    .tk-up-row {
+    .tk-chip.chip-live .tk-chip-clock { color: var(--live); }
+
+    .tk-chip.chip-upset .tk-chip-score .sc-win { color: var(--gold); }
+    .tk-chip.chip-upset .tk-chip-teams .chip-abbr { color: var(--gold); }
+
+    /* Upcoming band */
+    .tk-up-band {
+      overflow: hidden;
+      background: #0a0e1a;
+      border-bottom: 1px solid #1e2a45;
+      min-height: 40px;
       display: flex;
       align-items: center;
-      padding: 5px 10px;
-      border-bottom: 1px solid var(--border);
-      background: var(--card);
-      gap: 6px;
     }
 
-    .tk-up-teams {
-      flex: 1;
-      font-size: 0.72rem;
-      color: var(--text);
-      min-width: 0;
-    }
-
-    .tk-up-teams .tk-vs { color: var(--muted); font-weight: 400; font-size: 0.62rem; margin: 0 3px; }
-
-    .tk-time {
-      font-size: 0.6rem;
-      color: var(--blue2);
-      white-space: nowrap;
-    }
-
-    .tk-odds {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-
-    .tk-odd-pill {
-      font-size: 0.58rem;
-      font-weight: 700;
-      padding: 1px 5px;
-      border-radius: 3px;
-      background: var(--blue);
+    .tk-up-label {
+      background: var(--blue2);
       color: #fff;
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 10px;
+      height: 100%;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .tk-up-scroll-track {
+      flex: 1;
+      overflow: hidden;
+      height: 100%;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    .tk-up-scroll-inner {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      animation: tk-scroll 60s linear infinite;
+    }
+
+    .tk-up-scroll-inner:hover { animation-play-state: paused; }
+
+    .tk-up-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 18px;
+      border-right: 1px solid #1e2a45;
+      font-size: 0.68rem;
+    }
+
+    .tk-up-chip .uc-teams { color: #8aa0c0; font-weight: 600; }
+    .tk-up-chip .uc-teams .chip-abbr { color: #c8d8f0; }
+    .tk-up-chip .uc-teams .chip-sep  { color: #2a3a55; margin: 0 3px; }
+    .tk-up-chip .uc-time  { color: #4a6080; font-size: 0.6rem; }
+
+    .uc-odds {
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    .uc-pill {
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 2px;
       white-space: nowrap;
     }
 
-    .tk-odd-pill.spread { background: var(--blue2); }
-    .tk-odd-pill.total  { background: var(--orange); }
+    .uc-pill.spread { background: #1e3a5f; color: #7ab0ff; }
+    .uc-pill.ml     { background: #1a2a1a; color: #5adf7a; }
+    .uc-pill.total  { background: #3a1a00; color: #ff9a3c; }
 
-    .tk-apikey-banner {
-      background: #fffde7;
-      border: 1px dashed var(--gold);
-      border-radius: 6px;
-      margin: 8px;
-      padding: 8px 10px;
-      font-size: 0.68rem;
-      color: var(--text);
-      line-height: 1.5;
-    }
-
-    .tk-apikey-banner a { color: var(--blue2); }
-
-    .tk-apikey-row {
+    /* API key config strip */
+    .tk-key-strip {
+      background: #0f1520;
+      border-top: 1px solid #1e2a45;
+      padding: 6px 10px;
       display: flex;
-      gap: 6px;
-      margin-top: 6px;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.62rem;
+      color: #4a6080;
+      flex-shrink: 0;
     }
 
-    .tk-apikey-input {
+    .tk-key-strip a { color: var(--gold); text-decoration: none; }
+
+    .tk-key-input {
       flex: 1;
-      font-size: 0.68rem;
-      padding: 3px 6px;
-      border: 1px solid var(--border);
+      max-width: 240px;
+      font-size: 0.62rem;
+      padding: 2px 6px;
+      background: #1a2535;
+      border: 1px solid #2a3a55;
       border-radius: 3px;
-      color: var(--text);
+      color: #c8d8f0;
     }
 
-    .tk-apikey-btn {
-      font-size: 0.68rem;
-      padding: 3px 10px;
-      background: var(--blue);
+    .tk-key-btn {
+      font-size: 0.62rem;
+      padding: 2px 8px;
+      background: var(--blue2);
       color: #fff;
       border: none;
       border-radius: 3px;
       cursor: pointer;
     }
+
+    .tk-key-ok { color: #5adf7a; font-size: 0.62rem; }
 
     /* ── TABS ── */
     .tabs {
@@ -735,84 +846,89 @@
     const upcoming = games.filter(e => statusOf(e) === 'upcoming');
     const tv = document.getElementById('ticker-view');
 
-    let html = '';
+    const makeChip = (e, isLive) => {
+      const comp  = e.competitions?.[0];
+      const comps = comp?.competitors || [];
+      const away  = comps.find(c => c.homeAway === 'away') || comps[0];
+      const home  = comps.find(c => c.homeAway === 'home') || comps[1];
+      if (!away || !home) return '';
+      const aAbbr = away.team?.abbreviation || '?';
+      const hAbbr = home.team?.abbreviation || '?';
+      const aSeed = getSeed(away), hSeed = getSeed(home);
+      const aSeedStr = aSeed ? `<sup style="font-size:0.5em;opacity:.7">${aSeed}</sup>` : '';
+      const hSeedStr = hSeed ? `<sup style="font-size:0.5em;opacity:.7">${hSeed}</sup>` : '';
 
-    // ── Live section
-    if (live.length) {
-      html += `<div class="ticker-section-hd">● Live Now</div>`;
-      for (const e of live) {
-        const comp  = e.competitions?.[0];
-        const comps = comp?.competitors || [];
-        const away  = comps.find(c => c.homeAway === 'away') || comps[0];
-        const home  = comps.find(c => c.homeAway === 'home') || comps[1];
-        if (!away || !home) continue;
+      if (isLive) {
         const aScore = parseInt(away.score) || 0;
         const hScore = parseInt(home.score) || 0;
         const aWin = aScore > hScore, hWin = hScore > aScore;
-        const aSeed = getSeed(away), hSeed = getSeed(home);
         const seedsValid = aSeed && hSeed && aScore !== hScore;
         const isUpset = seedsValid && ((aWin && aSeed > hSeed) || (hWin && hSeed > aSeed));
-        const aAbbr = away.team?.abbreviation || away.team?.shortDisplayName || '?';
-        const hAbbr = home.team?.abbreviation || home.team?.shortDisplayName || '?';
-        const aSeedTxt = aSeed ? `(${aSeed}) ` : '';
-        const hSeedTxt = hSeed ? `(${hSeed}) ` : '';
-        html += `<div class="tk-live-row${isUpset ? ' upset-row' : ''}">
-          <div class="tk-dot"></div>
-          <div class="tk-teams">${aSeedTxt}${aAbbr}<span class="tk-vs">vs</span>${hSeedTxt}${hAbbr}</div>
-          <div class="tk-scores">
-            <span class="${aWin ? 'tk-win' : 'tk-lose'}">${aScore}</span>–<span class="${hWin ? 'tk-win' : 'tk-lose'}">${hScore}
-          </span></div>
-          <div class="tk-clock">${clockOf(e)}</div>
-        </div>`;
-      }
-    }
-
-    // ── Upcoming section
-    if (upcoming.length) {
-      const hasKey = !!oddsApiKey;
-      html += `<div class="ticker-section-hd">Upcoming</div>`;
-      if (!hasKey) {
-        html += `<div class="tk-apikey-banner">
-          <strong>Add DraftKings lines</strong> — get a free API key (500 req/mo) at
-          <a href="https://the-odds-api.com" target="_blank">the-odds-api.com</a> to see spreads &amp; moneylines.
-          <div class="tk-apikey-row">
-            <input class="tk-apikey-input" id="odds-key-input" placeholder="Paste API key here…" value="${oddsApiKey}" />
-            <button class="tk-apikey-btn" onclick="saveOddsKey()">Save</button>
+        const clock = clockOf(e);
+        return `<div class="tk-chip chip-live${isUpset ? ' chip-upset' : ''}">
+          <div class="tk-chip-teams">
+            <span class="chip-abbr">${aSeedStr}${aAbbr}</span>
+            <span class="chip-sep">vs</span>
+            <span class="chip-abbr">${hSeedStr}${hAbbr}</span>
           </div>
+          <div class="tk-chip-score">
+            <span class="${aWin ? 'sc-win' : 'sc-lose'}">${aScore}</span><span class="sc-sep">–</span><span class="${hWin ? 'sc-win' : 'sc-lose'}">${hScore}</span>
+          </div>
+          <div class="tk-chip-clock">${clock}</div>
         </div>`;
-      }
-      for (const e of upcoming) {
-        const comp  = e.competitions?.[0];
-        const comps = comp?.competitors || [];
-        const away  = comps.find(c => c.homeAway === 'away') || comps[0];
-        const home  = comps.find(c => c.homeAway === 'home') || comps[1];
-        if (!away || !home) continue;
-        const aAbbr = away.team?.abbreviation || away.team?.shortDisplayName || '?';
-        const hAbbr = home.team?.abbreviation || home.team?.shortDisplayName || '?';
-        const aSeed = getSeed(away), hSeed = getSeed(home);
-        const aSeedTxt = aSeed ? `(${aSeed}) ` : '';
-        const hSeedTxt = hSeed ? `(${hSeed}) ` : '';
+      } else {
         const time = clockOf(e);
-        const dk = getDkLine(away, home);
-        let oddsHtml = '';
-        if (dk) {
-          const spread = dk.spreads?.find(o => o.name.toLowerCase().includes(home.team?.name?.toLowerCase().split(' ').pop() || '??'));
-          const total  = dk.totals?.[0];
-          const awayML = dk.h2h?.find(o => o.name === away.team?.displayName);
-          const homeML = dk.h2h?.find(o => o.name === home.team?.displayName);
-          if (spread)  oddsHtml += `<span class="tk-odd-pill spread">${spread.point > 0 ? '+' : ''}${spread.point}</span>`;
-          if (total)   oddsHtml += `<span class="tk-odd-pill total">O/U ${total.point}</span>`;
-          if (awayML)  oddsHtml += `<span class="tk-odd-pill">${awayML.price > 0 ? '+' : ''}${awayML.price}</span>`;
-        }
-        html += `<div class="tk-up-row">
-          <div class="tk-up-teams">${aSeedTxt}${aAbbr}<span class="tk-vs">@</span>${hSeedTxt}${hAbbr}</div>
-          <div class="tk-time">${time}</div>
-          ${oddsHtml ? `<div class="tk-odds">${oddsHtml}</div>` : ''}
+        const tv   = tvOf(e) || '';
+        return `<div class="tk-up-chip">
+          <div class="uc-teams">
+            <span class="chip-abbr">${aSeedStr}${aAbbr}</span>
+            <span class="chip-sep">@</span>
+            <span class="chip-abbr">${hSeedStr}${hAbbr}</span>
+          </div>
+          <div class="uc-time">${time}${tv ? ' · ' + tv : ''}</div>
         </div>`;
       }
+    };
+
+    const liveChips    = live.map(e => makeChip(e, true)).join('');
+    const upcomingChips = upcoming.map(e => makeChip(e, false)).join('');
+
+    let html = `
+      <div class="tk-header">
+        <div class="tk-header-badge">
+          ${live.length ? `<div class="tk-hd-dot"></div> ${live.length} Live` : 'No Live Games'}
+        </div>
+        <div class="tk-header-meta">
+          <span class="tk-header-count">${games.length} total games today</span>
+        </div>
+      </div>`;
+
+    if (live.length) {
+      const doubled = liveChips + liveChips;
+      html += `
+      <div class="tk-band">
+        <div class="tk-band-label">🔴 LIVE</div>
+        <div class="tk-scroll-track">
+          <div class="tk-scroll-inner" style="animation-duration:${Math.max(20, live.length * 6)}s">${doubled}</div>
+        </div>
+      </div>`;
     }
 
-    if (!html) html = '<div class="empty">No games right now</div>';
+    if (upcoming.length) {
+      const doubled = upcomingChips + upcomingChips;
+      html += `
+      <div class="tk-up-band">
+        <div class="tk-up-label">UPCOMING</div>
+        <div class="tk-up-scroll-track">
+          <div class="tk-up-scroll-inner" style="animation-duration:${Math.max(30, upcoming.length * 4)}s">${doubled}</div>
+        </div>
+      </div>`;
+    }
+
+    if (!liveChips && !upcomingChips) {
+      html += `<div style="color:#4a6080;padding:20px;text-align:center;font-size:0.8rem;">No games right now</div>`;
+    }
+
     tv.innerHTML = html;
   }
 
