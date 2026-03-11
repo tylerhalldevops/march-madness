@@ -966,8 +966,35 @@
     const isTicker = t === 'ticker';
     document.getElementById('ticker-view').style.display = isTicker ? 'block' : 'none';
     document.getElementById('content').style.display     = isTicker ? 'none'  : 'block';
-    if (isTicker) renderTicker();
-    else render();
+    if (isTicker) {
+      renderTicker();
+      launchTickerWindow();
+    } else render();
+  }
+
+  function launchTickerWindow() {
+    // Try to resize if we're already a popup
+    try {
+      window.resizeTo(screen.availWidth, 145);
+      window.moveTo(0, 0);
+    } catch(e) {}
+
+    // If we're a normal tab (resizeTo won't work), open a dedicated popup
+    if (window.outerWidth > 800 || window.outerHeight > 300) {
+      const url = window.location.href.split('?')[0] + '?ticker=1';
+      const popup = window.open(url, 'mm-ticker',
+        `width=${screen.availWidth},height=145,top=0,left=0,menubar=no,toolbar=no,location=no,status=no,resizable=yes`
+      );
+      if (popup) popup.focus();
+    }
+  }
+
+  // Auto-enter ticker mode if opened as popup
+  if (new URLSearchParams(location.search).get('ticker') === '1') {
+    window.addEventListener('load', () => {
+      try { window.resizeTo(screen.availWidth, 145); window.moveTo(0, 0); } catch(e) {}
+      setTab('ticker');
+    });
   }
 
   fetchScores();
