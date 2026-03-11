@@ -105,6 +105,77 @@
       min-width: 24px;
     }
 
+    /* ── TICKER ── */
+    .ticker-wrap {
+      background: var(--blue2);
+      overflow: hidden;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .ticker-label {
+      background: var(--gold);
+      color: var(--blue);
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 8px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .ticker-track {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ticker-inner {
+      display: inline-flex;
+      gap: 0;
+      white-space: nowrap;
+      animation: ticker-scroll 30s linear infinite;
+    }
+
+    .ticker-inner:hover { animation-play-state: paused; }
+
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 16px;
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.9);
+      border-right: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .ticker-item .t-score {
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ticker-item .t-win { color: #fff; }
+    .ticker-item .t-lose { color: rgba(255,255,255,0.55); }
+
+    .ticker-item .t-clock {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.56rem;
+    }
+
+    .ticker-item.t-upset .t-score { color: var(--gold); }
+
     /* ── TABS ── */
     .tabs {
       display: flex;
@@ -241,7 +312,8 @@
       color: #fff;
     }
 
-    .team-name {
+
+.team-name {
       flex: 1;
       font-size: 0.78rem;
       font-weight: 600;
@@ -353,6 +425,13 @@
     <span class="countdown" id="cd">20s</span>
   </div>
 </header>
+
+<div class="ticker-wrap" id="ticker-wrap" style="display:none">
+  <div class="ticker-label">Scores</div>
+  <div class="ticker-track">
+    <div class="ticker-inner" id="ticker-inner"></div>
+  </div>
+</div>
 
 <div class="tabs">
   <button class="tab active" id="tab-all"      onclick="setTab('all')">All<span class="n" id="n-all"></span></button>
@@ -538,6 +617,50 @@
     }
 
     document.getElementById('content').innerHTML = html;
+    buildTicker();
+  }
+
+  function buildTicker() {
+    const live = games.filter(e => statusOf(e) === 'live');
+    const wrap = document.getElementById('ticker-wrap');
+    if (!live.length) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'flex';
+
+    const items = live.map(e => {
+      const comp  = e.competitions?.[0];
+      const comps = comp?.competitors || [];
+      const away  = comps.find(c => c.homeAway === 'away') || comps[0];
+      const home  = comps.find(c => c.homeAway === 'home') || comps[1];
+      if (!away || !home) return '';
+      const aScore = parseInt(away.score) || 0;
+      const hScore = parseInt(home.score) || 0;
+      const aName  = away.team?.abbreviation || away.team?.shortDisplayName || '?';
+      const hName  = home.team?.abbreviation || home.team?.shortDisplayName || '?';
+      const aWin   = aScore > hScore;
+      const hWin   = hScore > aScore;
+      const clock  = clockOf(e);
+      const aSeed  = getSeed(away);
+      const hSeed  = getSeed(home);
+      const seedsValid = aSeed && hSeed && aScore !== hScore;
+      const isUpset = seedsValid &&
+        ((aWin && aSeed > hSeed) || (hWin && hSeed > aSeed));
+      return `<div class="ticker-item${isUpset ? ' t-upset' : ''}">
+        <span class="${aWin ? 't-win' : 't-lose'}">${aName}</span>
+        <span class="t-score ${aWin ? 't-win' : 't-lose'}">${aScore}</span>
+        <span class="t-clock">–</span>
+        <span class="t-score ${hWin ? 't-win' : 't-lose'}">${hScore}</span>
+        <span class="${hWin ? 't-win' : 't-lose'}">${hName}</span>
+        <span class="t-clock">${clock}</span>
+      </div>`;
+    }).join('');
+
+    // Duplicate for seamless loop
+    document.getElementById('ticker-inner').innerHTML = items + items;
+
+    // Adjust speed based on content length
+    const totalItems = live.length;
+    const duration = Math.max(15, totalItems * 5);
+    document.getElementById('ticker-inner').style.animationDuration = duration + 's';
   }
 
   async function fetchScores() {
