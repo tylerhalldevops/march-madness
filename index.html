@@ -851,7 +851,7 @@
       const isUpset = seedsValid && ((aWin && aSeed > hSeed) || (hWin && hSeed > aSeed));
       const aAbbr = away.team?.abbreviation || '?';
       const hAbbr = home.team?.abbreviation || '?';
-      const detail = e.status?.type?.shortDetail || clockOf(e);
+      const detail = e.status?.type?.shortDetail || clockOf(e) || '';
       // parse "7:43 - 2nd" into clock + period
       const parts = detail.split(' - ');
       const clk = parts[0] || detail;
@@ -926,8 +926,6 @@
       html = `<div style="color:#666;padding:24px;text-align:center;font-size:0.85rem;">No games right now</div>`;
     }
 
-    el.innerHTML = html;
-
     if (live.length) {
       const performers = await fetchTopPerformers(live);
       if (performers.length) {
@@ -945,7 +943,7 @@
           </div>`;
         }).join('');
         const tpDur = Math.max(30, performers.length * 4);
-        el.innerHTML += `<div class="espn-band" style="border-bottom:none;border-top:3px solid #f9a825;">
+        html += `<div class="espn-band" style="border-bottom:none;border-top:3px solid #f9a825;">
           <div class="espn-tag" style="background:#f9a825;color:#000;min-width:60px;">TOP<span class="tag-sub">SCORERS</span></div>
           <div class="espn-scroll">
             <div class="espn-inner" style="animation-duration:${tpDur}s">${chips}${chips}</div>
@@ -953,6 +951,8 @@
         </div>`;
       }
     }
+
+    el.innerHTML = html;
   }
 
   function saveOddsKey() {
