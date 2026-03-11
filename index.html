@@ -109,7 +109,7 @@
     #ticker-view {
       display: none;
       flex-direction: column;
-      background: #1a1a1a;
+      background: #005555;
       min-height: calc(100vh - 70px);
     }
 
@@ -118,14 +118,14 @@
       display: flex;
       align-items: stretch;
       overflow: hidden;
-      height: 52px;
+      height: 60px;
       border-bottom: 3px solid #cc0000;
     }
 
     .espn-band + .espn-band {
-      border-top: 1px solid #333;
+      border-top: 1px solid #007777;
       border-bottom: none;
-      height: 44px;
+      height: 48px;
     }
 
     .espn-tag {
@@ -147,7 +147,7 @@
     }
 
     .espn-tag.upcoming-tag {
-      background: #333;
+      background: #007777;
       font-size: 0.6rem;
     }
 
@@ -163,7 +163,7 @@
       overflow: hidden;
       display: flex;
       align-items: center;
-      background: #1a1a1a;
+      background: #005555;
     }
 
     .espn-inner {
@@ -184,54 +184,53 @@
     .espn-game {
       display: inline-flex;
       align-items: center;
-      padding: 0 22px 0 0;
-      gap: 0;
-      border-right: 1px solid #333;
-      margin-right: 22px;
+      padding: 0 24px 0 16px;
+      gap: 10px;
+      border-right: 1px solid #2a2a2a;
     }
 
     .espn-teams {
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: 3px;
       min-width: 0;
     }
 
     .espn-team-row {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
+      gap: 7px;
+      font-size: 0.85rem;
       font-family: -apple-system, BlinkMacSystemFont, 'Arial Narrow', 'Segoe UI', sans-serif;
     }
 
     .espn-seed {
-      font-size: 0.55rem;
-      color: #888;
-      min-width: 10px;
+      font-size: 0.6rem;
+      color: #666;
+      min-width: 12px;
       text-align: right;
     }
 
     .espn-abbr {
       font-weight: 700;
-      color: #ddd;
-      min-width: 36px;
-      letter-spacing: 0.02em;
+      color: #bbb;
+      min-width: 38px;
+      letter-spacing: 0.03em;
     }
 
     .espn-score {
-      font-size: 0.88rem;
+      font-size: 1rem;
       font-weight: 900;
       font-variant-numeric: tabular-nums;
-      min-width: 22px;
+      min-width: 26px;
       text-align: right;
-      color: #888;
+      color: #777;
     }
 
-    .espn-team-row.winning .espn-abbr  { color: #fff; }
-    .espn-team-row.winning .espn-score { color: #fff; }
-    .espn-team-row.losing  .espn-abbr  { color: #666; }
-    .espn-team-row.losing  .espn-score { color: #666; }
+    .espn-team-row.winning .espn-abbr  { color: #ffffff; }
+    .espn-team-row.winning .espn-score { color: #ffffff; font-size: 1.1rem; }
+    .espn-team-row.losing  .espn-abbr  { color: #555; }
+    .espn-team-row.losing  .espn-score { color: #555; }
 
     .espn-game.upset .espn-team-row.winning .espn-score { color: #f9a825; }
     .espn-game.upset .espn-team-row.winning .espn-abbr  { color: #f9a825; }
@@ -241,44 +240,44 @@
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-      padding-left: 8px;
-      gap: 1px;
+      gap: 2px;
+      min-width: 52px;
     }
 
     .espn-clock {
-      font-size: 0.62rem;
-      color: #cc0000;
-      font-weight: 700;
+      font-size: 0.72rem;
+      color: #ff4444;
+      font-weight: 800;
       white-space: nowrap;
     }
 
     .espn-period {
-      font-size: 0.55rem;
-      color: #888;
+      font-size: 0.62rem;
+      color: #aaa;
       white-space: nowrap;
+      font-weight: 600;
     }
 
     /* Upcoming chip */
     .espn-up-game {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 0 20px 0 0;
-      border-right: 1px solid #333;
-      margin-right: 20px;
-      font-size: 0.75rem;
+      gap: 8px;
+      padding: 0 24px 0 16px;
+      border-right: 1px solid #2a2a2a;
+      font-size: 0.82rem;
     }
 
     .espn-up-teams {
-      color: #ccc;
-      font-weight: 600;
+      color: #ddd;
+      font-weight: 700;
     }
 
-    .espn-up-teams .at { color: #666; margin: 0 3px; font-weight: 400; }
+    .espn-up-teams .at { color: #555; margin: 0 4px; font-weight: 400; }
 
     .espn-up-time {
-      font-size: 0.65rem;
-      color: #888;
+      font-size: 0.68rem;
+      color: #aaa;
       white-space: nowrap;
     }
 
