@@ -105,76 +105,153 @@
       min-width: 24px;
     }
 
-    /* ── TICKER ── */
-    .ticker-wrap {
-      background: var(--blue2);
-      overflow: hidden;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
+    /* ── TICKER TAB ── */
+    #ticker-view {
+      display: none;
+      flex-direction: column;
     }
 
-    .ticker-label {
-      background: var(--gold);
-      color: var(--blue);
-      font-size: 0.58rem;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 0 8px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      white-space: nowrap;
-      flex-shrink: 0;
-      z-index: 1;
-    }
-
-    .ticker-track {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .ticker-inner {
-      display: inline-flex;
-      gap: 0;
-      white-space: nowrap;
-      animation: ticker-scroll 30s linear infinite;
-    }
-
-    .ticker-inner:hover { animation-play-state: paused; }
-
-    @keyframes ticker-scroll {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    .ticker-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 0 16px;
+    .ticker-section-hd {
       font-size: 0.62rem;
-      color: rgba(255,255,255,0.9);
-      border-right: 1px solid rgba(255,255,255,0.15);
-    }
-
-    .ticker-item .t-score {
       font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--orange);
+      padding: 4px 10px;
+    }
+
+    /* Live ticker rows */
+    .tk-live-row {
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--live-bg);
+      gap: 6px;
+    }
+
+    .tk-live-row.upset-row { border-left: 3px solid var(--gold); }
+
+    .tk-dot {
+      width: 6px; height: 6px;
+      background: var(--live);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    .tk-teams {
+      flex: 1;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 0;
+    }
+
+    .tk-teams .tk-vs { color: var(--muted); font-weight: 400; font-size: 0.62rem; margin: 0 3px; }
+
+    .tk-scores {
+      font-size: 0.9rem;
+      font-weight: 900;
       font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+      color: var(--blue);
+      white-space: nowrap;
     }
 
-    .ticker-item .t-win { color: #fff; }
-    .ticker-item .t-lose { color: rgba(255,255,255,0.55); }
+    .tk-scores .tk-win  { color: var(--blue); }
+    .tk-scores .tk-lose { color: var(--final); }
 
-    .ticker-item .t-clock {
-      color: rgba(255,255,255,0.5);
-      font-size: 0.56rem;
+    .tk-clock {
+      font-size: 0.6rem;
+      color: var(--muted);
+      white-space: nowrap;
+      min-width: 60px;
+      text-align: right;
     }
 
-    .ticker-item.t-upset .t-score { color: var(--gold); }
+    /* Upcoming ticker rows */
+    .tk-up-row {
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+      gap: 6px;
+    }
+
+    .tk-up-teams {
+      flex: 1;
+      font-size: 0.72rem;
+      color: var(--text);
+      min-width: 0;
+    }
+
+    .tk-up-teams .tk-vs { color: var(--muted); font-weight: 400; font-size: 0.62rem; margin: 0 3px; }
+
+    .tk-time {
+      font-size: 0.6rem;
+      color: var(--blue2);
+      white-space: nowrap;
+    }
+
+    .tk-odds {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .tk-odd-pill {
+      font-size: 0.58rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: var(--blue);
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .tk-odd-pill.spread { background: var(--blue2); }
+    .tk-odd-pill.total  { background: var(--orange); }
+
+    .tk-apikey-banner {
+      background: #fffde7;
+      border: 1px dashed var(--gold);
+      border-radius: 6px;
+      margin: 8px;
+      padding: 8px 10px;
+      font-size: 0.68rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .tk-apikey-banner a { color: var(--blue2); }
+
+    .tk-apikey-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .tk-apikey-input {
+      flex: 1;
+      font-size: 0.68rem;
+      padding: 3px 6px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text);
+    }
+
+    .tk-apikey-btn {
+      font-size: 0.68rem;
+      padding: 3px 10px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
 
     /* ── TABS ── */
     .tabs {
@@ -426,19 +503,15 @@
   </div>
 </header>
 
-<div class="ticker-wrap" id="ticker-wrap" style="display:none">
-  <div class="ticker-label">Scores</div>
-  <div class="ticker-track">
-    <div class="ticker-inner" id="ticker-inner"></div>
-  </div>
-</div>
-
 <div class="tabs">
   <button class="tab active" id="tab-all"      onclick="setTab('all')">All<span class="n" id="n-all"></span></button>
   <button class="tab"        id="tab-live"     onclick="setTab('live')">Live<span class="n" id="n-live"></span></button>
   <button class="tab"        id="tab-final"    onclick="setTab('final')">Final<span class="n" id="n-final"></span></button>
   <button class="tab"        id="tab-upcoming" onclick="setTab('upcoming')">Soon<span class="n" id="n-upcoming"></span></button>
+  <button class="tab"        id="tab-ticker"   onclick="setTab('ticker')">Ticker</button>
 </div>
+
+<div id="ticker-view"></div>
 
 <div id="content">
   <div class="spinner"></div>
@@ -446,7 +519,9 @@
 </div>
 
 <script>
-  let games = [], tab = 'all', cd = 20, timer;
+  let games = [], dkOdds = {}, tab = 'all', cd = 20, timer;
+  const ODDS_KEY_STORE = 'mm_odds_api_key';
+  let oddsApiKey = localStorage.getItem(ODDS_KEY_STORE) || '';
 
   // Conference tournament seeds — static for the tournament
   const CONF_SEEDS = {
@@ -617,50 +692,136 @@
     }
 
     document.getElementById('content').innerHTML = html;
-    buildTicker();
+    if (tab === 'ticker') renderTicker();
   }
 
-  function buildTicker() {
-    const live = games.filter(e => statusOf(e) === 'live');
-    const wrap = document.getElementById('ticker-wrap');
-    if (!live.length) { wrap.style.display = 'none'; return; }
-    wrap.style.display = 'flex';
+  async function fetchDkOdds() {
+    if (!oddsApiKey) return;
+    try {
+      const r = await fetch(
+        `https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds?regions=us&markets=h2h,spreads,totals&oddsFormat=american&bookmakers=draftkings&apiKey=${oddsApiKey}`,
+        { cache: 'no-store' }
+      );
+      if (!r.ok) return;
+      const events = await r.json();
+      dkOdds = {};
+      for (const ev of events) {
+        const dk = ev.bookmakers?.[0];
+        if (!dk) continue;
+        const markets = {};
+        for (const m of dk.markets || []) markets[m.key] = m.outcomes;
+        // key by away_team + home_team normalized
+        const key = (ev.away_team + '|' + ev.home_team).toLowerCase();
+        dkOdds[key] = markets;
+      }
+    } catch(e) { /* silent */ }
+  }
 
-    const items = live.map(e => {
-      const comp  = e.competitions?.[0];
-      const comps = comp?.competitors || [];
-      const away  = comps.find(c => c.homeAway === 'away') || comps[0];
-      const home  = comps.find(c => c.homeAway === 'home') || comps[1];
-      if (!away || !home) return '';
-      const aScore = parseInt(away.score) || 0;
-      const hScore = parseInt(home.score) || 0;
-      const aName  = away.team?.abbreviation || away.team?.shortDisplayName || '?';
-      const hName  = home.team?.abbreviation || home.team?.shortDisplayName || '?';
-      const aWin   = aScore > hScore;
-      const hWin   = hScore > aScore;
-      const clock  = clockOf(e);
-      const aSeed  = getSeed(away);
-      const hSeed  = getSeed(home);
-      const seedsValid = aSeed && hSeed && aScore !== hScore;
-      const isUpset = seedsValid &&
-        ((aWin && aSeed > hSeed) || (hWin && hSeed > aSeed));
-      return `<div class="ticker-item${isUpset ? ' t-upset' : ''}">
-        <span class="${aWin ? 't-win' : 't-lose'}">${aName}</span>
-        <span class="t-score ${aWin ? 't-win' : 't-lose'}">${aScore}</span>
-        <span class="t-clock">–</span>
-        <span class="t-score ${hWin ? 't-win' : 't-lose'}">${hScore}</span>
-        <span class="${hWin ? 't-win' : 't-lose'}">${hName}</span>
-        <span class="t-clock">${clock}</span>
-      </div>`;
-    }).join('');
+  function getDkLine(away, home) {
+    const aName = away.team?.displayName || '';
+    const hName = home.team?.displayName || '';
+    const key = (aName + '|' + hName).toLowerCase();
+    // Try fuzzy match
+    const match = Object.keys(dkOdds).find(k => {
+      const [a, h] = k.split('|');
+      return aName.toLowerCase().includes(a.split(' ').pop()) ||
+             hName.toLowerCase().includes(h.split(' ').pop());
+    });
+    return dkOdds[key] || (match ? dkOdds[match] : null);
+  }
 
-    // Duplicate for seamless loop
-    document.getElementById('ticker-inner').innerHTML = items + items;
+  function renderTicker() {
+    const live     = games.filter(e => statusOf(e) === 'live');
+    const upcoming = games.filter(e => statusOf(e) === 'upcoming');
+    const tv = document.getElementById('ticker-view');
 
-    // Adjust speed based on content length
-    const totalItems = live.length;
-    const duration = Math.max(15, totalItems * 5);
-    document.getElementById('ticker-inner').style.animationDuration = duration + 's';
+    let html = '';
+
+    // ── Live section
+    if (live.length) {
+      html += `<div class="ticker-section-hd">● Live Now</div>`;
+      for (const e of live) {
+        const comp  = e.competitions?.[0];
+        const comps = comp?.competitors || [];
+        const away  = comps.find(c => c.homeAway === 'away') || comps[0];
+        const home  = comps.find(c => c.homeAway === 'home') || comps[1];
+        if (!away || !home) continue;
+        const aScore = parseInt(away.score) || 0;
+        const hScore = parseInt(home.score) || 0;
+        const aWin = aScore > hScore, hWin = hScore > aScore;
+        const aSeed = getSeed(away), hSeed = getSeed(home);
+        const seedsValid = aSeed && hSeed && aScore !== hScore;
+        const isUpset = seedsValid && ((aWin && aSeed > hSeed) || (hWin && hSeed > aSeed));
+        const aAbbr = away.team?.abbreviation || away.team?.shortDisplayName || '?';
+        const hAbbr = home.team?.abbreviation || home.team?.shortDisplayName || '?';
+        const aSeedTxt = aSeed ? `(${aSeed}) ` : '';
+        const hSeedTxt = hSeed ? `(${hSeed}) ` : '';
+        html += `<div class="tk-live-row${isUpset ? ' upset-row' : ''}">
+          <div class="tk-dot"></div>
+          <div class="tk-teams">${aSeedTxt}${aAbbr}<span class="tk-vs">vs</span>${hSeedTxt}${hAbbr}</div>
+          <div class="tk-scores">
+            <span class="${aWin ? 'tk-win' : 'tk-lose'}">${aScore}</span>–<span class="${hWin ? 'tk-win' : 'tk-lose'}">${hScore}
+          </span></div>
+          <div class="tk-clock">${clockOf(e)}</div>
+        </div>`;
+      }
+    }
+
+    // ── Upcoming section
+    if (upcoming.length) {
+      const hasKey = !!oddsApiKey;
+      html += `<div class="ticker-section-hd">Upcoming</div>`;
+      if (!hasKey) {
+        html += `<div class="tk-apikey-banner">
+          <strong>Add DraftKings lines</strong> — get a free API key (500 req/mo) at
+          <a href="https://the-odds-api.com" target="_blank">the-odds-api.com</a> to see spreads &amp; moneylines.
+          <div class="tk-apikey-row">
+            <input class="tk-apikey-input" id="odds-key-input" placeholder="Paste API key here…" value="${oddsApiKey}" />
+            <button class="tk-apikey-btn" onclick="saveOddsKey()">Save</button>
+          </div>
+        </div>`;
+      }
+      for (const e of upcoming) {
+        const comp  = e.competitions?.[0];
+        const comps = comp?.competitors || [];
+        const away  = comps.find(c => c.homeAway === 'away') || comps[0];
+        const home  = comps.find(c => c.homeAway === 'home') || comps[1];
+        if (!away || !home) continue;
+        const aAbbr = away.team?.abbreviation || away.team?.shortDisplayName || '?';
+        const hAbbr = home.team?.abbreviation || home.team?.shortDisplayName || '?';
+        const aSeed = getSeed(away), hSeed = getSeed(home);
+        const aSeedTxt = aSeed ? `(${aSeed}) ` : '';
+        const hSeedTxt = hSeed ? `(${hSeed}) ` : '';
+        const time = clockOf(e);
+        const dk = getDkLine(away, home);
+        let oddsHtml = '';
+        if (dk) {
+          const spread = dk.spreads?.find(o => o.name.toLowerCase().includes(home.team?.name?.toLowerCase().split(' ').pop() || '??'));
+          const total  = dk.totals?.[0];
+          const awayML = dk.h2h?.find(o => o.name === away.team?.displayName);
+          const homeML = dk.h2h?.find(o => o.name === home.team?.displayName);
+          if (spread)  oddsHtml += `<span class="tk-odd-pill spread">${spread.point > 0 ? '+' : ''}${spread.point}</span>`;
+          if (total)   oddsHtml += `<span class="tk-odd-pill total">O/U ${total.point}</span>`;
+          if (awayML)  oddsHtml += `<span class="tk-odd-pill">${awayML.price > 0 ? '+' : ''}${awayML.price}</span>`;
+        }
+        html += `<div class="tk-up-row">
+          <div class="tk-up-teams">${aSeedTxt}${aAbbr}<span class="tk-vs">@</span>${hSeedTxt}${hAbbr}</div>
+          <div class="tk-time">${time}</div>
+          ${oddsHtml ? `<div class="tk-odds">${oddsHtml}</div>` : ''}
+        </div>`;
+      }
+    }
+
+    if (!html) html = '<div class="empty">No games right now</div>';
+    tv.innerHTML = html;
+  }
+
+  function saveOddsKey() {
+    const val = document.getElementById('odds-key-input')?.value?.trim() || '';
+    oddsApiKey = val;
+    if (val) localStorage.setItem(ODDS_KEY_STORE, val);
+    else localStorage.removeItem(ODDS_KEY_STORE);
+    fetchDkOdds().then(renderTicker);
   }
 
   async function fetchScores() {
@@ -683,13 +844,18 @@
 
   function setTab(t) {
     tab = t;
-    ['all','live','final','upcoming'].forEach(x => {
+    ['all','live','final','upcoming','ticker'].forEach(x => {
       document.getElementById('tab-'+x).classList.toggle('active', x === t);
     });
-    render();
+    const isTicker = t === 'ticker';
+    document.getElementById('ticker-view').style.display = isTicker ? 'block' : 'none';
+    document.getElementById('content').style.display     = isTicker ? 'none'  : 'block';
+    if (isTicker) renderTicker();
+    else render();
   }
 
   fetchScores();
+  fetchDkOdds();
   timer = setInterval(() => {
     cd--;
     document.getElementById('cd').textContent = cd + 's';
