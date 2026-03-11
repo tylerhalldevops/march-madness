@@ -281,40 +281,19 @@
       white-space: nowrap;
     }
 
-    /* ── TOP PERFORMERS ── */
-    .ticker-performers {
-      padding: 20px 24px;
-    }
-    .tp-header {
-      font-size: 0.65rem;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      color: #f9a825;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-    }
-    .tp-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 8px;
-    }
-    .tp-row {
-      display: flex;
+    /* ── TOP PERFORMERS band ── */
+    .tp-chip {
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(0,0,0,0.35);
-      padding: 8px 12px;
-      border-radius: 4px;
-      border-left: 3px solid #cc0000;
+      gap: 7px;
+      padding: 0 22px 0 14px;
+      border-right: 1px solid #444;
+      white-space: nowrap;
     }
     .tp-name {
-      font-weight: 700;
       font-size: 0.82rem;
+      font-weight: 700;
       color: #fff;
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
     .tp-team {
       font-size: 0.7rem;
@@ -322,13 +301,13 @@
       font-weight: 600;
     }
     .tp-pts {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 900;
       color: #f9a825;
       font-variant-numeric: tabular-nums;
     }
     .tp-label {
-      font-size: 0.58rem;
+      font-size: 0.55rem;
       color: #888;
       font-weight: 700;
       align-self: flex-end;
@@ -338,7 +317,6 @@
       font-size: 0.65rem;
       color: #aaa;
       font-weight: 600;
-      white-space: nowrap;
     }
 
     /* ── TABS ── */
@@ -953,12 +931,12 @@
     if (live.length) {
       const performers = await fetchTopPerformers(live);
       if (performers.length) {
-        const rows = performers.map(p => {
+        const chips = performers.map(p => {
           const extras = [
             p.reb ? `${p.reb} REB` : '',
             p.ast ? `${p.ast} AST` : '',
           ].filter(Boolean).join(' · ');
-          return `<div class="tp-row">
+          return `<div class="tp-chip">
             <span class="tp-name">${p.name}</span>
             <span class="tp-team">${p.team}</span>
             <span class="tp-pts">${p.pts}</span>
@@ -966,9 +944,12 @@
             ${extras ? `<span class="tp-stat">${extras}</span>` : ''}
           </div>`;
         }).join('');
-        el.innerHTML += `<div class="ticker-performers">
-          <div class="tp-header">Top Scorers &mdash; Live</div>
-          <div class="tp-grid">${rows}</div>
+        const tpDur = Math.max(30, performers.length * 4);
+        el.innerHTML += `<div class="espn-band" style="border-bottom:none;border-top:3px solid #f9a825;">
+          <div class="espn-tag" style="background:#f9a825;color:#000;min-width:60px;">TOP<span class="tag-sub">SCORERS</span></div>
+          <div class="espn-scroll">
+            <div class="espn-inner" style="animation-duration:${tpDur}s">${chips}${chips}</div>
+          </div>
         </div>`;
       }
     }
