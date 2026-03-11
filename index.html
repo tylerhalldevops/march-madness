@@ -281,6 +281,66 @@
       white-space: nowrap;
     }
 
+    /* ── TOP PERFORMERS ── */
+    .ticker-performers {
+      padding: 20px 24px;
+    }
+    .tp-header {
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: #f9a825;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .tp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 8px;
+    }
+    .tp-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,0,0,0.35);
+      padding: 8px 12px;
+      border-radius: 4px;
+      border-left: 3px solid #cc0000;
+    }
+    .tp-name {
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: #fff;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tp-team {
+      font-size: 0.7rem;
+      color: #bbb;
+      font-weight: 600;
+    }
+    .tp-pts {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #f9a825;
+      font-variant-numeric: tabular-nums;
+    }
+    .tp-label {
+      font-size: 0.58rem;
+      color: #888;
+      font-weight: 700;
+      align-self: flex-end;
+      margin-bottom: 2px;
+    }
+    .tp-stat {
+      font-size: 0.65rem;
+      color: #aaa;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
     /* ── TABS ── */
     .tabs {
       display: flex;
@@ -758,7 +818,42 @@
     return dkOdds[key] || (match ? dkOdds[match] : null);
   }
 
-  function renderTicker() {
+  async function fetchTopPerformers(liveGames) {
+    const results = await Promise.allSettled(
+      liveGames.map(e =>
+        fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary?event=${e.id}`)
+          .then(r => r.json())
+      )
+    );
+    const performers = [];
+    results.forEach(res => {
+      if (res.status !== 'fulfilled') return;
+      const players = res.value?.boxscore?.players || [];
+      players.forEach(teamData => {
+        const teamAbbr = teamData.team?.abbreviation || '?';
+        const stats = teamData.statistics?.[0];
+        if (!stats) return;
+        const ptsIdx = stats.names?.indexOf('PTS') ?? -1;
+        const rebIdx = stats.names?.indexOf('REB') ?? -1;
+        const astIdx = stats.names?.indexOf('AST') ?? -1;
+        if (ptsIdx < 0) return;
+        stats.athletes?.forEach(a => {
+          const pts = parseInt(a.stats?.[ptsIdx]) || 0;
+          if (pts === 0) return;
+          performers.push({
+            name: a.athlete?.shortName || a.athlete?.displayName || '?',
+            team: teamAbbr,
+            pts,
+            reb: rebIdx >= 0 ? parseInt(a.stats?.[rebIdx]) || 0 : 0,
+            ast: astIdx >= 0 ? parseInt(a.stats?.[astIdx]) || 0 : 0,
+          });
+        });
+      });
+    });
+    return performers.sort((a, b) => b.pts - a.pts).slice(0, 12);
+  }
+
+  async function renderTicker() {
     const live     = games.filter(e => statusOf(e) === 'live');
     const upcoming = games.filter(e => statusOf(e) === 'upcoming');
     const el = document.getElementById('ticker-view');
@@ -854,6 +949,29 @@
     }
 
     el.innerHTML = html;
+
+    if (live.length) {
+      const performers = await fetchTopPerformers(live);
+      if (performers.length) {
+        const rows = performers.map(p => {
+          const extras = [
+            p.reb ? `${p.reb} REB` : '',
+            p.ast ? `${p.ast} AST` : '',
+          ].filter(Boolean).join(' · ');
+          return `<div class="tp-row">
+            <span class="tp-name">${p.name}</span>
+            <span class="tp-team">${p.team}</span>
+            <span class="tp-pts">${p.pts}</span>
+            <span class="tp-label">PTS</span>
+            ${extras ? `<span class="tp-stat">${extras}</span>` : ''}
+          </div>`;
+        }).join('');
+        el.innerHTML += `<div class="ticker-performers">
+          <div class="tp-header">Top Scorers &mdash; Live</div>
+          <div class="tp-grid">${rows}</div>
+        </div>`;
+      }
+    }
   }
 
   function saveOddsKey() {
