@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>March Madness · Scores</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #eef2ff;
+      --card:      #ffffff;
+      --card-hover:#f0f4ff;
+      --border:    #c8d4f0;
+      --blue:      #1a237e;
+      --blue2:     #1565c0;
+      --live:      #e53935;
+      --live-bg:   #fff5f5;
+      --final:     #78909c;
+      --gold:      #f9a825;
+      --orange:    #e65100;
+      --text:      #0d1440;
+      --muted:     #546e8a;
+      --score:     #1a237e;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 13px;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--blue);
+      border-bottom: 4px solid var(--gold);
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 900;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .brand span { color: var(--gold); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--live);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 5px; height: 5px;
+      background: #fff;
+      border-radius: 50%;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    .refresh-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 2px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,0.25); }
+
+    .countdown {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.6);
+      font-variant-numeric: tabular-nums;
+      min-width: 24px;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      background: var(--blue2);
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .tab {
+      flex: 1;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      padding: 7px 4px;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -3px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .tab:hover { color: #fff; }
+    .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    .tab .n {
+      font-size: 0.6rem;
+      opacity: 0.7;
+      margin-left: 3px;
+    }
+
+    /* ── SECTION ── */
+    .section-label {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--orange);
+      padding: 4px 10px;
+      grid-column: 1 / -1;
+    }
+
+    /* ── GRID WRAPPER ── */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+      padding: 6px;
+    }
+
+    /* ── GAME CARD ── */
+    .game {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.15s;
+    }
+
+    .game:hover { background: var(--card-hover); }
+
+    .game.live     { border-color: var(--live); background: var(--live-bg); }
+    .game.final    { border-top: 2px solid var(--final); }
+    .game.upcoming { border-top: 2px solid var(--blue2); }
+
+    .game.upset {
+      border-color: var(--gold) !important;
+      animation: upset-glow 2.5s ease-in-out infinite;
+    }
+
+    @keyframes upset-glow {
+      0%, 100% { box-shadow: 0 0 0 1px rgba(249,168,37,0.5); }
+      50%       { box-shadow: 0 0 6px 2px rgba(249,168,37,0.2); }
+    }
+
+    /* teams section */
+    .game-teams {
+      padding: 6px 8px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .round-tag {
+      font-size: 0.52rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .team-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .logo {
+      width: 16px; height: 16px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .logo-abbr {
+      width: 16px; height: 16px;
+      background: var(--border);
+      border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.42rem; font-weight: 700;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .seed-badge {
+      font-size: 0.5rem;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      letter-spacing: 0.02em;
+    }
+
+    .seed-ncaa {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .seed-ap {
+      background: var(--orange);
+      color: #fff;
+    }
+
+    .team-name {
+      flex: 1;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .team-score {
+      font-size: 1rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      min-width: 24px;
+      text-align: right;
+      color: var(--blue);
+      flex-shrink: 0;
+    }
+
+    .team-row.winning .team-name  { color: var(--text); font-weight: 700; }
+    .team-row.winning .team-score { color: var(--blue); }
+    .team-row.losing  .team-name  { color: var(--muted); font-weight: 400; }
+    .team-row.losing  .team-score { color: var(--final); }
+
+    .divider-row {
+      height: 1px;
+      background: var(--border);
+      margin: 2px 0;
+    }
+
+    /* bottom status bar */
+    .game-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border-top: 1px solid var(--border);
+      padding: 3px 6px;
+      background: #eef2ff;
+    }
+
+    .status-label {
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .status-label.live     { color: var(--live); }
+    .status-label.final    { color: var(--final); }
+    .status-label.upcoming { color: var(--blue2); }
+
+    .status-label.live::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--live);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    .status-clock {
+      font-size: 0.58rem;
+      color: var(--muted);
+    }
+
+    .tv-tag {
+      font-size: 0.52rem;
+      color: var(--muted);
+      background: var(--border);
+      padding: 1px 4px;
+      border-radius: 2px;
+      margin-left: auto;
+    }
+
+    /* ── STATES ── */
+    .empty {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 30px auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">🏀 <span>March</span> Madness</div>
+  <div class="header-right">
+    <div class="live-pill" id="live-pill" style="display:none">
+      <div class="live-dot"></div>
+      <span id="live-count">0</span> Live
+    </div>
+    <button class="refresh-btn" onclick="manualRefresh()">↻</button>
+    <span class="countdown" id="cd">20s</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" id="tab-all"      onclick="setTab('all')">All<span class="n" id="n-all"></span></button>
+  <button class="tab"        id="tab-live"     onclick="setTab('live')">Live<span class="n" id="n-live"></span></button>
+  <button class="tab"        id="tab-final"    onclick="setTab('final')">Final<span class="n" id="n-final"></span></button>
+  <button class="tab"        id="tab-upcoming" onclick="setTab('upcoming')">Soon<span class="n" id="n-upcoming"></span></button>
+</div>
+
+<div id="content">
+  <div class="spinner"></div>
+  <div class="empty">Loading…</div>
+</div>
+
+<script>
+  let games = [], tab = 'all', cd = 20, timer;
+
+  const statusOf = e => {
+    const n = e.status?.type?.name || '';
+    if (n === 'STATUS_IN_PROGRESS' || n === 'STATUS_HALFTIME') return 'live';
+    if (n.startsWith('STATUS_FINAL')) return 'final';
+    return 'upcoming';
+  };
+
+  const clockOf = e => {
+    const t = e.status?.type;
+    const n = t?.name || '';
+    if (n === 'STATUS_HALFTIME') return 'Half';
+    if (n === 'STATUS_IN_PROGRESS') return t?.shortDetail || t?.detail || 'Live';
+    if (n.startsWith('STATUS_FINAL')) return 'Final';
+    if (e.date) return new Date(e.date).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+    return t?.description || '';
+  };
+
+  const roundOf = e => {
+    for (const n of e.competitions?.[0]?.notes || [])
+      if (n.headline) return n.headline;
+    return '';
+  };
+
+  const tvOf = e => {
+    const bc = e.competitions?.[0]?.broadcasts;
+    if (Array.isArray(bc) && bc[0]) {
+      const b = bc[0];
+      return b.names?.[0] || b.media?.shortName || (typeof b === 'string' ? b : null);
+    }
+    return null;
+  };
+
+  function buildGame(e) {
+    const comp = e.competitions?.[0];
+    if (!comp) return '';
+    const status = statusOf(e);
+    const clock  = clockOf(e);
+    const round  = roundOf(e);
+    const tv     = tvOf(e);
+
+    const comps = comp.competitors || [];
+    const away  = comps.find(c => c.homeAway === 'away') || comps[0];
+    const home  = comps.find(c => c.homeAway === 'home') || comps[1];
+    if (!away || !home) return '';
+
+    const aScore = parseInt(away.score) || 0;
+    const hScore = parseInt(home.score) || 0;
+    const showW  = status !== 'upcoming';
+    const aWin   = showW && aScore > hScore;
+    const hWin   = showW && hScore > aScore;
+
+    // Upset: higher seed number (worse team) currently leading a live game
+    // Use NCAA tournament seed if available, otherwise AP poll rank
+    const aSeed = away.seed || (away.curatedRank?.current <= 16 ? away.curatedRank.current : null);
+    const hSeed = home.seed || (home.curatedRank?.current <= 16 ? home.curatedRank.current : null);
+    const seedsValid = aSeed && hSeed && aScore !== hScore;
+    const isUpset = status === 'live' && seedsValid &&
+      ((aWin && aSeed > hSeed) || (hWin && hSeed > aSeed));
+
+    const teamHtml = (t, score, win, lose) => {
+      const logo = t.team?.logo;
+      const abbr = t.team?.abbreviation || '?';
+      const name = t.team?.shortDisplayName || t.team?.name || abbr;
+      const scoreStr = status === 'upcoming' ? '' : score;
+      const cls = !showW ? '' : win ? 'winning' : 'losing';
+      const logoEl = logo
+        ? `<img class="logo" src="${logo}" alt="${abbr}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-abbr" style="display:none">${abbr}</div>`
+        : `<div class="logo-abbr">${abbr}</div>`;
+
+      // Seeding: NCAA tournament seed takes priority, then AP poll rank
+      const ncaaSeed = t.seed;
+      const apRank   = t.curatedRank?.current;
+      let seedBadge  = '';
+      if (ncaaSeed && ncaaSeed <= 16) {
+        seedBadge = `<span class="seed-badge seed-ncaa">${ncaaSeed}</span>`;
+      } else if (apRank && apRank <= 25) {
+        seedBadge = `<span class="seed-badge seed-ap">AP</span>`;
+      }
+
+      return `<div class="team-row ${cls}">${logoEl}${seedBadge}<span class="team-name">${name}</span><span class="team-score">${scoreStr}</span></div>`;
+    };
+
+    // clock display
+    let clockTop = status === 'live' ? 'Live' : status === 'final' ? 'Final' : 'Soon';
+    let clockBot = '';
+    if (status === 'live' && clock !== 'Live') clockBot = clock;
+    else if (status === 'upcoming') clockBot = clock;
+
+    return `
+      <div class="game ${status}${isUpset ? ' upset' : ''}">
+        <div class="game-teams">
+          ${round ? `<div class="round-tag">${round}</div>` : ''}
+          ${teamHtml(away, aScore, aWin, hWin)}
+          <div class="divider-row"></div>
+          ${teamHtml(home, hScore, hWin, aWin)}
+        </div>
+        <div class="game-status">
+          <div class="status-label ${status}">${clockTop}</div>
+          ${clockBot ? `<span class="status-clock">${clockBot}</span>` : ''}
+          ${tv ? `<span class="tv-tag">${tv}</span>` : ''}
+        </div>
+      </div>`;
+  }
+
+  function render() {
+    const live     = games.filter(e => statusOf(e) === 'live');
+    const final    = games.filter(e => statusOf(e) === 'final');
+    const upcoming = games.filter(e => statusOf(e) === 'upcoming');
+
+    document.getElementById('n-all').textContent      = games.length ? ` ${games.length}` : '';
+    document.getElementById('n-live').textContent     = live.length     ? ` ${live.length}` : '';
+    document.getElementById('n-final').textContent    = final.length    ? ` ${final.length}` : '';
+    document.getElementById('n-upcoming').textContent = upcoming.length ? ` ${upcoming.length}` : '';
+
+    const pill = document.getElementById('live-pill');
+    if (live.length) { pill.style.display='flex'; document.getElementById('live-count').textContent=live.length; }
+    else pill.style.display='none';
+
+    let filtered;
+    if      (tab === 'live')     filtered = live;
+    else if (tab === 'final')    filtered = final;
+    else if (tab === 'upcoming') filtered = upcoming;
+    else                         filtered = games;
+
+    if (!filtered.length) {
+      document.getElementById('content').innerHTML =
+        `<div class="empty">${games.length ? 'No games in this category' : 'No games right now'}</div>`;
+      return;
+    }
+
+    const grid = games => `<div class="games-grid">${games.map(buildGame).join('')}</div>`;
+
+    let html = '';
+    if (tab === 'all') {
+      if (live.length)     html += `<div class="section-label">Live Now</div>${grid(live)}`;
+      if (upcoming.length) html += `<div class="section-label">Upcoming</div>${grid(upcoming)}`;
+      if (final.length)    html += `<div class="section-label">Final</div>${grid(final)}`;
+    } else {
+      html = grid(filtered);
+    }
+
+    document.getElementById('content').innerHTML = html;
+  }
+
+  async function fetchScores() {
+    try {
+      const r = await fetch(
+        'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?limit=300&groups=50',
+        { cache: 'no-store' }
+      );
+      if (!r.ok) throw new Error(r.status);
+      const d = await r.json();
+      games = d.events || [];
+      render();
+    } catch(err) {
+      if (!games.length)
+        document.getElementById('content').innerHTML = '<div class="empty">⚠ Could not load scores</div>';
+    }
+  }
+
+  function manualRefresh() { cd = 20; fetchScores(); }
+
+  function setTab(t) {
+    tab = t;
+    ['all','live','final','upcoming'].forEach(x => {
+      document.getElementById('tab-'+x).classList.toggle('active', x === t);
+    });
+    render();
+  }
+
+  fetchScores();
+  timer = setInterval(() => {
+    cd--;
+    document.getElementById('cd').textContent = cd + 's';
+    if (cd <= 0) { cd = 20; fetchScores(); }
+  }, 1000);
+</script>
+</body>
+</html>
