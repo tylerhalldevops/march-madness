@@ -983,25 +983,32 @@
   async function fetchScores() {
     try {
       const BASE = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?limit=300&groups=50';
-      // Fetch: no-date (ESPN "current"), explicit today, and yesterday — cover all timezone edge cases
-      const [r0, r1, r2] = await Promise.all([
-        fetch(BASE,                             { cache: 'no-store' }),
-        fetch(`${BASE}&dates=${espnDate(0)}`,   { cache: 'no-store' }),
-        fetch(`${BASE}&dates=${espnDate(-1)}`,  { cache: 'no-store' }),
+      const [r1, r2] = await Promise.all([
+        fetch(`${BASE}&dates=${espnDate(0)}`,  { cache: 'no-store' }),
+        fetch(`${BASE}&dates=${espnDate(-1)}`, { cache: 'no-store' }),
       ]);
-      const [d0, d1, d2] = await Promise.all([r0.json(), r1.json(), r2.json()]);
+      const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
 
-      // Merge and deduplicate by event id; today events first, yesterday last
+      // Tag each event using its actual date, not which fetch returned it
+      const todayStr = espnDate(0); // e.g. "20260312"
       const seen = new Set();
       const merged = [];
-      const addEvents = (events, day) => {
-        for (const e of (events || [])) {
-          if (!seen.has(e.id)) { seen.add(e.id); merged.push({ ...e, _day: day }); }
-        }
-      };
-      addEvents(d0.events, 'today');
-      addEvents(d1.events, 'today');
-      addEvents(d2.events, 'yesterday');
+      for (const e of [...(d1.events || []), ...(d2.events || [])]) {
+        if (seen.has(e.id)) continue;
+        seen.add(e.id);
+        // e.date is like "2026-03-12T22:00Z" — strip dashes for comparison
+        const gameDay = (e.date || '').slice(0,10).replace(/-/g,'');
+        merged.push({ ...e, _day: gameDay === todayStr ? 'today' : 'yesterday' });
+      }
+
+      // Sort: live first, then upcoming, then finals — today before yesterday
+      const order = { live: 0, upcoming: 1, final: 2 };
+      const dayOrder = { today: 0, yesterday: 1 };
+      merged.sort((a, b) => {
+        const so = (order[statusOf(a)] ?? 3) - (order[statusOf(b)] ?? 3);
+        if (so !== 0) return so;
+        return (dayOrder[a._day] ?? 1) - (dayOrder[b._day] ?? 1);
+      });
 
       games = merged;
       render();
