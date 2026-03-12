@@ -983,32 +983,30 @@
   async function fetchScores() {
     try {
       const BASE = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?limit=300&groups=50';
-      const [r1, r2] = await Promise.all([
+      // Fetch all three: no-date (ESPN live default), today, yesterday
+      const [r0, r1, r2] = await Promise.all([
+        fetch(BASE,                            { cache: 'no-store' }),
         fetch(`${BASE}&dates=${espnDate(0)}`,  { cache: 'no-store' }),
         fetch(`${BASE}&dates=${espnDate(-1)}`, { cache: 'no-store' }),
       ]);
-      const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
+      const [d0, d1, d2] = await Promise.all([r0.json(), r1.json(), r2.json()]);
 
-      // Tag each event using its actual date, not which fetch returned it
-      const todayStr = espnDate(0); // e.g. "20260312"
+      const todayStr = espnDate(0);
       const seen = new Set();
       const merged = [];
-      for (const e of [...(d1.events || []), ...(d2.events || [])]) {
+
+      for (const e of [...(d0.events||[]), ...(d1.events||[]), ...(d2.events||[])]) {
         if (seen.has(e.id)) continue;
         seen.add(e.id);
-        // e.date is like "2026-03-12T22:00Z" — strip dashes for comparison
-        const gameDay = (e.date || '').slice(0,10).replace(/-/g,'');
+        // Convert UTC game time → local date string for correct timezone comparison
+        const localDate = e.date ? new Date(e.date) : null;
+        const gameDay = localDate
+          ? localDate.getFullYear().toString()
+            + String(localDate.getMonth()+1).padStart(2,'0')
+            + String(localDate.getDate()).padStart(2,'0')
+          : todayStr;
         merged.push({ ...e, _day: gameDay === todayStr ? 'today' : 'yesterday' });
       }
-
-      // Sort: live first, then upcoming, then finals — today before yesterday
-      const order = { live: 0, upcoming: 1, final: 2 };
-      const dayOrder = { today: 0, yesterday: 1 };
-      merged.sort((a, b) => {
-        const so = (order[statusOf(a)] ?? 3) - (order[statusOf(b)] ?? 3);
-        if (so !== 0) return so;
-        return (dayOrder[a._day] ?? 1) - (dayOrder[b._day] ?? 1);
-      });
 
       games = merged;
       render();
