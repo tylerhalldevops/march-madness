@@ -751,8 +751,17 @@
     let html = '';
     if (tab === 'all') {
       if (live.length)     html += `<div class="section-label">Live Now</div>${grid(live)}`;
-      if (upcoming.length) html += `<div class="section-label">Upcoming</div>${grid(upcoming)}`;
-      if (final.length)    html += `<div class="section-label">Final</div>${grid(final)}`;
+      if (upcoming.length) html += `<div class="section-label">Upcoming Today</div>${grid(upcoming)}`;
+      const todayFinal     = final.filter(e => e._day !== 'yesterday');
+      const yesterdayFinal = final.filter(e => e._day === 'yesterday');
+      if (todayFinal.length)     html += `<div class="section-label">Final — Today</div>${grid(todayFinal)}`;
+      if (yesterdayFinal.length) html += `<div class="section-label">Final — Yesterday</div>${grid(yesterdayFinal)}`;
+    } else if (tab === 'final') {
+      const todayFinal     = filtered.filter(e => e._day !== 'yesterday');
+      const yesterdayFinal = filtered.filter(e => e._day === 'yesterday');
+      if (todayFinal.length)     html += `<div class="section-label">Today</div>${grid(todayFinal)}`;
+      if (yesterdayFinal.length) html += `<div class="section-label">Yesterday</div>${grid(yesterdayFinal)}`;
+      if (!html) html = grid(filtered);
     } else {
       html = grid(filtered);
     }
@@ -963,15 +972,38 @@
     fetchDkOdds().then(renderTicker);
   }
 
+  function espnDate(offset = 0) {
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    return d.getFullYear().toString()
+      + String(d.getMonth()+1).padStart(2,'0')
+      + String(d.getDate()).padStart(2,'0');
+  }
+
   async function fetchScores() {
     try {
-      const r = await fetch(
-        'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?limit=300&groups=50',
-        { cache: 'no-store' }
-      );
-      if (!r.ok) throw new Error(r.status);
-      const d = await r.json();
-      games = d.events || [];
+      const BASE = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?limit=300&groups=50';
+      // Fetch: no-date (ESPN "current"), explicit today, and yesterday — cover all timezone edge cases
+      const [r0, r1, r2] = await Promise.all([
+        fetch(BASE,                             { cache: 'no-store' }),
+        fetch(`${BASE}&dates=${espnDate(0)}`,   { cache: 'no-store' }),
+        fetch(`${BASE}&dates=${espnDate(-1)}`,  { cache: 'no-store' }),
+      ]);
+      const [d0, d1, d2] = await Promise.all([r0.json(), r1.json(), r2.json()]);
+
+      // Merge and deduplicate by event id; today events first, yesterday last
+      const seen = new Set();
+      const merged = [];
+      const addEvents = (events, day) => {
+        for (const e of (events || [])) {
+          if (!seen.has(e.id)) { seen.add(e.id); merged.push({ ...e, _day: day }); }
+        }
+      };
+      addEvents(d0.events, 'today');
+      addEvents(d1.events, 'today');
+      addEvents(d2.events, 'yesterday');
+
+      games = merged;
       render();
     } catch(err) {
       if (!games.length)
