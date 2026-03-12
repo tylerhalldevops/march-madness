@@ -825,66 +825,66 @@
       letter-spacing: 0.05em;
     }
 
-    .tourney-wall-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      padding: 12px;
+    /* Scrolling strip */
+    .tourney-strip-wrap {
+      overflow: hidden;
+      padding: 8px 0 10px;
     }
 
-    .tourney-team-badge {
-      display: flex;
+    .tourney-strip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      padding: 0 8px;
+      animation: tk-scroll 40s linear infinite;
+    }
+
+    .tourney-strip:hover { animation-play-state: paused; }
+
+    .tourney-badge {
+      display: inline-flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       position: relative;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: 8px;
-      padding: 8px 4px 6px;
-      animation: badge-pop 0.4s ease-out both;
+      padding: 7px 10px 6px;
+      min-width: 68px;
+      cursor: default;
     }
 
-    @keyframes badge-pop {
-      0%   { transform: scale(0.7); opacity: 0; }
-      70%  { transform: scale(1.08); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .tourney-team-badge:hover {
-      background: rgba(255,255,255,0.12);
+    .tourney-badge:hover {
+      background: rgba(255,255,255,0.14);
       border-color: var(--gold);
     }
 
-    .tourney-logo-wrap {
-      position: relative;
-      width: 36px; height: 36px;
-    }
-
-    .tourney-logo {
-      width: 36px; height: 36px;
+    .tb-logo {
+      width: 34px; height: 34px;
       object-fit: contain;
     }
 
-    .tourney-logo-fallback {
-      width: 36px; height: 36px;
+    .tb-fallback {
+      width: 34px; height: 34px;
       background: rgba(255,255,255,0.15);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.55rem;
+      font-size: 0.52rem;
       font-weight: 900;
       color: #fff;
     }
 
-    .tourney-check {
+    .tb-check {
       position: absolute;
-      bottom: -3px; right: -3px;
+      top: -4px; right: -4px;
       background: #2e7d32;
       color: #fff;
-      font-size: 0.5rem;
-      width: 14px; height: 14px;
+      font-size: 0.45rem;
+      width: 13px; height: 13px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -893,33 +893,23 @@
       font-weight: 900;
     }
 
-    .tourney-team-name {
+    .tb-name {
       font-size: 0.58rem;
       font-weight: 700;
       color: #fff;
       text-align: center;
+      max-width: 68px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       line-height: 1.2;
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .tourney-conf-name {
-      font-size: 0.46rem;
-      color: rgba(255,255,255,0.45);
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
     }
 
     .tourney-empty {
-      padding: 20px;
+      padding: 16px;
       text-align: center;
       color: rgba(255,255,255,0.4);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
     }
 
     .section-chevron {
@@ -975,16 +965,10 @@
       .bt-pick { font-size: 0.7rem; }
       .bt-score { font-size: 0.6rem; }
 
-      /* Tournament wall — 3 cols instead of 4 */
-      .tourney-wall-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        padding: 8px;
-      }
-      .tourney-logo, .tourney-logo-wrap { width: 30px; height: 30px; }
-      .tourney-logo-fallback { width: 30px; height: 30px; font-size: 0.5rem; }
-      .tourney-team-name { font-size: 0.52rem; }
-      .tourney-conf-name { font-size: 0.42rem; }
+      /* Tournament wall strip — smaller badges */
+      .tourney-badge { min-width: 58px; padding: 6px 8px 5px; }
+      .tb-logo, .tb-fallback { width: 28px; height: 28px; }
+      .tb-name { font-size: 0.52rem; max-width: 58px; }
       .tourney-wall-title { font-size: 0.78rem; }
 
       /* Bracket */
@@ -1976,34 +1960,40 @@
 
   function buildTourneyWall() {
     const winners = getConferenceWinners();
-    let badges = '';
+
     if (winners.length === 0) {
-      badges = `<div class="tourney-empty">🏀 Waiting for conference champions…</div>`;
-    } else {
-      winners.forEach((w, i) => {
-        const delay = (i * 0.06).toFixed(2);
-        const logoEl = w.logo
-          ? `<img class="tourney-logo" src="${w.logo}" alt="${w.abbr}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="tourney-logo-fallback" style="display:none">${w.abbr}</div>`
-          : `<div class="tourney-logo-fallback">${w.abbr}</div>`;
-        // Shorten conf label
-        const conf = w.conf.replace(/ Tournament.*$/i,'').replace(/^The /i,'');
-        badges += `<div class="tourney-team-badge" style="animation-delay:${delay}s">
-          <div class="tourney-logo-wrap">
-            ${logoEl}
-            <div class="tourney-check">✓</div>
-          </div>
-          <div class="tourney-team-name">${w.team}</div>
-          <div class="tourney-conf-name">${conf}</div>
-        </div>`;
-      });
+      return `<div class="tourney-wall">
+        <div class="tourney-wall-header">
+          <div class="tourney-wall-title">🎟️ Tournament Bound</div>
+          <div class="tourney-wall-count">0 / 68 IN</div>
+        </div>
+        <div class="tourney-empty">🏀 Waiting for conference champions…</div>
+      </div>`;
     }
+
+    const makeBadge = w => {
+      const logoEl = w.logo
+        ? `<img class="tb-logo" src="${w.logo}" alt="${w.abbr}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="tb-fallback" style="display:none">${w.abbr}</div>`
+        : `<div class="tb-fallback">${w.abbr}</div>`;
+      return `<div class="tourney-badge">
+        <div class="tb-check">✓</div>
+        ${logoEl}
+        <div class="tb-name">${w.team}</div>
+      </div>`;
+    };
+
+    const items = winners.map(makeBadge).join('');
+    // Duplicate for seamless loop; speed scales with number of teams
+    const dur = Math.max(20, winners.length * 3);
 
     return `<div class="tourney-wall">
       <div class="tourney-wall-header">
         <div class="tourney-wall-title">🎟️ Tournament Bound</div>
         <div class="tourney-wall-count">${winners.length} / 68 IN</div>
       </div>
-      <div class="tourney-wall-grid">${badges}</div>
+      <div class="tourney-strip-wrap">
+        <div class="tourney-strip" style="animation-duration:${dur}s">${items}${items}</div>
+      </div>
     </div>`;
   }
 
