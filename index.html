@@ -912,6 +912,94 @@
       font-size: 0.72rem;
     }
 
+    /* ── CREATOR CARD ── */
+    .creator-card {
+      margin: 6px 6px 20px;
+      border-radius: 10px;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      overflow: hidden;
+    }
+
+    .creator-header {
+      background: #1a1a1a;
+      border-bottom: 1px solid #222;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .creator-header-label {
+      font-size: 0.52rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #555;
+    }
+
+    .creator-body {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .creator-avatar {
+      font-size: 2.8rem;
+      line-height: 1;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 6px rgba(249,168,37,0.4));
+    }
+
+    .creator-info { flex: 1; min-width: 0; }
+
+    .creator-name {
+      font-size: 0.88rem;
+      font-weight: 900;
+      color: #eee;
+      letter-spacing: 0.02em;
+    }
+
+    .creator-handle {
+      font-size: 0.6rem;
+      color: #555;
+      margin-bottom: 5px;
+      font-style: italic;
+    }
+
+    .creator-bio {
+      font-size: 0.65rem;
+      color: #888;
+      line-height: 1.4;
+      margin-bottom: 7px;
+    }
+
+    .creator-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .creator-badge {
+      font-size: 0.52rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 20px;
+      border: 1px solid #333;
+      color: #aaa;
+      white-space: nowrap;
+    }
+
+    .creator-footer {
+      border-top: 1px solid #1e1e1e;
+      padding: 6px 12px;
+      font-size: 0.55rem;
+      color: #333;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
     .section-chevron {
       font-size: 0.7rem;
       transition: transform 0.2s;
@@ -1546,6 +1634,7 @@
       if (todayFinal.length)     html += section('Final — Today', todayFinal, 'final-today', true);
       if (yesterdayFinal.length) html += section('Final — Yesterday', yesterdayFinal, 'final-yesterday', true);
       html += buildTourneyWall();
+      html += buildCreatorCard();
     } else if (tab === 'final') {
       const todayFinal     = filtered.filter(e => e._day !== 'yesterday');
       const yesterdayFinal = filtered.filter(e => e._day === 'yesterday');
@@ -1994,6 +2083,30 @@
       <div class="tourney-strip-wrap">
         <div class="tourney-strip" style="animation-duration:${dur}s">${items}${items}</div>
       </div>
+    </div>`;
+  }
+
+  function buildCreatorCard() {
+    return `<div class="creator-card">
+      <div class="creator-header">
+        <span class="creator-header-label">⚠️ Website Creator</span>
+      </div>
+      <div class="creator-body">
+        <div class="creator-avatar">🧤</div>
+        <div class="creator-info">
+          <div class="creator-name">Tyler</div>
+          <div class="creator-handle">@guy-in-bathroom-with-work-gloves</div>
+          <div class="creator-bio">Built this entire app from scratch while wearing leather work gloves and a yellow beanie. Currently monitoring 3 DraftKings parlays that are definitely not all losing. Has a basketball hoop in his bedroom doorway for reasons.</div>
+          <div class="creator-badges">
+            <span class="creator-badge">🟡 Yellow Beanie Certified</span>
+            <span class="creator-badge">🪞 Bathroom Mirror Dev</span>
+            <span class="creator-badge">🧤 Typing Speed: 2 WPM</span>
+            <span class="creator-badge">📉 Profitable Bettor*</span>
+            <span class="creator-badge">*not profitable</span>
+          </div>
+        </div>
+      </div>
+      <div class="creator-footer">built with ☕ sweat and bad beats · tylerhalldevops.github.io/march-madness</div>
     </div>`;
   }
 
