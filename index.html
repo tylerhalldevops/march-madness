@@ -582,6 +582,210 @@
 
     .section-label.collapsible:hover { filter: brightness(1.1); }
 
+    /* ── BRACKET ── */
+    #bracket-view {
+      padding: 10px;
+      background: var(--bg);
+      min-height: calc(100vh - 70px);
+    }
+
+    .bracket-banner {
+      background: var(--blue);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .bracket-banner-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 0.04em;
+    }
+
+    .bracket-banner-sub {
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.65);
+      margin-top: 2px;
+    }
+
+    .bracket-count {
+      background: var(--gold);
+      color: #000;
+      font-size: 1.1rem;
+      font-weight: 900;
+      border-radius: 6px;
+      padding: 6px 12px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .bracket-count span {
+      display: block;
+      font-size: 0.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Region bracket */
+    .bracket-regions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .bracket-region {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .bracket-region-header {
+      background: var(--blue2);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+    }
+
+    .bracket-matchup {
+      display: flex;
+      flex-direction: column;
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border);
+      gap: 2px;
+    }
+
+    .bracket-matchup:last-child { border-bottom: none; }
+
+    .bracket-team {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      padding: 2px 0;
+    }
+
+    .bracket-team-seed {
+      font-size: 0.55rem;
+      font-weight: 800;
+      color: #fff;
+      background: var(--blue);
+      border-radius: 2px;
+      min-width: 16px;
+      text-align: center;
+      padding: 1px 3px;
+      flex-shrink: 0;
+    }
+
+    .bracket-team-seed.tbd { background: #ccc; color: #888; }
+
+    .bracket-team-logo {
+      width: 14px; height: 14px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .bracket-team-name {
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bracket-team-name.tbd { color: #bbb; font-style: italic; font-weight: 400; }
+
+    .bracket-team.clinched .bracket-team-name { color: var(--blue); font-weight: 700; }
+
+    .bracket-auto-badge {
+      font-size: 0.48rem;
+      background: #2e7d32;
+      color: #fff;
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .bracket-vs { font-size: 0.52rem; color: #bbb; text-align: center; line-height: 1; }
+
+    /* Selection Sunday notice */
+    .selection-notice {
+      background: var(--card);
+      border: 2px dashed var(--gold);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .selection-notice-date {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--blue);
+    }
+
+    .selection-notice-label {
+      font-size: 0.62rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 3px;
+    }
+
+    /* Clinched list */
+    .clinched-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .clinched-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid #2e7d32;
+      border-radius: 6px;
+      padding: 7px 9px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .clinched-logo {
+      width: 22px; height: 22px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .clinched-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .clinched-conf {
+      font-size: 0.54rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .section-chevron {
       font-size: 0.7rem;
       transition: transform 0.2s;
@@ -804,10 +1008,12 @@
   <button class="tab"        id="tab-upcoming" onclick="setTab('upcoming')">Soon<span class="n" id="n-upcoming"></span></button>
   <button class="tab"        id="tab-ticker"   onclick="setTab('ticker')">Ticker</button>
   <button class="tab"        id="tab-bets"     onclick="setTab('bets')">My Bets</button>
+  <button class="tab"        id="tab-bracket"  onclick="setTab('bracket')">Bracket</button>
 </div>
 
 <div id="ticker-view"></div>
 <div id="bets-view" style="display:none"></div>
+<div id="bracket-view" style="display:none"></div>
 
 <div id="content">
   <div class="spinner"></div>
@@ -1408,6 +1614,157 @@
     }
   }
 
+  // ── BRACKET ──────────────────────────────────────────────
+  const REGIONS = ['South','East','West','Midwest'];
+
+  function getConferenceWinners() {
+    const winners = [], seen = new Set();
+    for (const e of games) {
+      if (statusOf(e) !== 'final') continue;
+      const round = roundOf(e).toLowerCase();
+      if (!round.includes('championship') && !round.includes('title') && !round.includes('final')) continue;
+      const comps = e.competitions?.[0]?.competitors || [];
+      let winner = comps.find(c => c.winner === true);
+      if (!winner) winner = comps.reduce((a,b) => ((parseInt(a.score)||0) > (parseInt(b.score)||0) ? a : b));
+      if (!winner || seen.has(winner.team?.id)) continue;
+      seen.add(winner.team?.id);
+      winners.push({
+        team: winner.team?.shortDisplayName || winner.team?.name || '?',
+        abbr: winner.team?.abbreviation || '?',
+        logo: winner.team?.logo || null,
+        conf: roundOf(e).replace(/ - ?(Championship|Final|Title).*/i,'').trim(),
+      });
+    }
+    return winners;
+  }
+
+  async function renderBracket() {
+    const el = document.getElementById('bracket-view');
+    el.innerHTML = '<div class="spinner"></div><div class="empty">Loading bracket…</div>';
+
+    // Try ESPN tournament bracket API
+    let espnBracket = null;
+    try {
+      const r = await fetch(
+        'https://site.api.espn.com/apis/v2/sports/basketball/mens-college-basketball/tournaments',
+        { cache: 'no-store' }
+      );
+      if (r.ok) espnBracket = await r.json();
+    } catch(e) {}
+
+    // Also try the specific bracket endpoint
+    let regionData = null;
+    try {
+      const r2 = await fetch(
+        'https://site.api.espn.com/apis/v2/sports/basketball/mens-college-basketball/tournaments/22/2026/bracket',
+        { cache: 'no-store' }
+      );
+      if (r2.ok) regionData = await r2.json();
+    } catch(e) {}
+
+    const winners = getConferenceWinners();
+    let html = '';
+
+    // Banner
+    html += `<div class="bracket-banner">
+      <div>
+        <div class="bracket-banner-title">🏆 NCAA Tournament 2026</div>
+        <div class="bracket-banner-sub">Selection Sunday · March 15, 2026</div>
+      </div>
+      <div class="bracket-count">${winners.length}<span>Teams In</span></div>
+    </div>`;
+
+    // If ESPN bracket data with teams exists, show the real bracket
+    if (regionData?.bracket?.regions?.length) {
+      html += buildEspnBracket(regionData.bracket.regions);
+    } else {
+      // Show Selection Sunday notice + bracket skeleton
+      html += `<div class="selection-notice">
+        <div class="selection-notice-label">Full bracket releases</div>
+        <div class="selection-notice-date">Selection Sunday, March 15</div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:6px">${winners.length} auto bid${winners.length!==1?'s':''} clinched so far</div>
+      </div>`;
+
+      // Show 4-region skeleton
+      html += `<div class="bracket-regions">`;
+      for (const region of REGIONS) {
+        html += `<div class="bracket-region">
+          <div class="bracket-region-header">${region}</div>`;
+        for (let s = 1; s <= 8; s++) {
+          const opp = 17 - s;
+          html += `<div class="bracket-matchup">
+            <div class="bracket-team">
+              <span class="bracket-team-seed">${s}</span>
+              <span class="bracket-team-name tbd">TBD</span>
+            </div>
+            <div class="bracket-vs">vs</div>
+            <div class="bracket-team">
+              <span class="bracket-team-seed">${opp}</span>
+              <span class="bracket-team-name tbd">TBD</span>
+            </div>
+          </div>`;
+        }
+        html += `</div>`;
+      }
+      html += `</div>`;
+    }
+
+    // Conference winners list
+    if (winners.length) {
+      html += `<div class="section-label" style="margin-bottom:8px;">Auto Bids Clinched (${winners.length})</div>
+        <div class="clinched-list">`;
+      for (const w of winners) {
+        const logoEl = w.logo
+          ? `<img class="clinched-logo" src="${w.logo}" alt="${w.abbr}" onerror="this.style.display='none'">`
+          : `<div class="clinched-logo" style="background:var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:0.48rem;font-weight:700;color:var(--muted)">${w.abbr}</div>`;
+        html += `<div class="clinched-card">
+          ${logoEl}
+          <div style="min-width:0">
+            <div class="clinched-name">${w.team}</div>
+            <div class="clinched-conf">${w.conf}</div>
+          </div>
+        </div>`;
+      }
+      html += `</div>`;
+    }
+
+    el.innerHTML = html;
+  }
+
+  function buildEspnBracket(regions) {
+    let html = `<div class="bracket-regions">`;
+    for (const region of regions) {
+      html += `<div class="bracket-region">
+        <div class="bracket-region-header">${region.name || 'Region'}</div>`;
+      const r1 = region.rounds?.[0]?.matchups || [];
+      for (const matchup of r1) {
+        const t = matchup.competitors || [];
+        const makeTeam = c => {
+          const seed = c.seed || '?';
+          const name = c.team?.shortDisplayName || c.team?.name || 'TBD';
+          const logo = c.team?.logo || null;
+          const isTbd = !c.team;
+          const logoEl = logo
+            ? `<img class="bracket-team-logo" src="${logo}" alt="" onerror="this.style.display='none'">`
+            : '';
+          return `<div class="bracket-team${isTbd?' ':''}">
+            <span class="bracket-team-seed${isTbd?' tbd':''}">${seed}</span>
+            ${logoEl}
+            <span class="bracket-team-name${isTbd?' tbd':''}">${name}</span>
+          </div>`;
+        };
+        html += `<div class="bracket-matchup">
+          ${t[0] ? makeTeam(t[0]) : '<div class="bracket-team"><span class="bracket-team-seed tbd">?</span><span class="bracket-team-name tbd">TBD</span></div>'}
+          <div class="bracket-vs">vs</div>
+          ${t[1] ? makeTeam(t[1]) : '<div class="bracket-team"><span class="bracket-team-seed tbd">?</span><span class="bracket-team-name tbd">TBD</span></div>'}
+        </div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+    return html;
+  }
+
   function toggleSection(key) {
     if (!window._collapsed) window._collapsed = {};
     window._collapsed[key] = !window._collapsed[key];
@@ -1418,16 +1775,19 @@
 
   function setTab(t) {
     tab = t;
-    ['all','live','final','upcoming','ticker','bets'].forEach(x => {
+    ['all','live','final','upcoming','ticker','bets','bracket'].forEach(x => {
       document.getElementById('tab-'+x).classList.toggle('active', x === t);
     });
-    const isTicker = t === 'ticker';
-    const isBets   = t === 'bets';
-    document.getElementById('ticker-view').style.display = isTicker ? 'block' : 'none';
-    document.getElementById('bets-view').style.display   = isBets   ? 'block' : 'none';
-    document.getElementById('content').style.display     = (!isTicker && !isBets) ? 'block' : 'none';
-    if (isTicker) renderTicker();
-    else if (isBets) renderBets();
+    const isTicker  = t === 'ticker';
+    const isBets    = t === 'bets';
+    const isBracket = t === 'bracket';
+    document.getElementById('ticker-view').style.display  = isTicker  ? 'block' : 'none';
+    document.getElementById('bets-view').style.display    = isBets    ? 'block' : 'none';
+    document.getElementById('bracket-view').style.display = isBracket ? 'block' : 'none';
+    document.getElementById('content').style.display      = (!isTicker && !isBets && !isBracket) ? 'block' : 'none';
+    if (isTicker)  renderTicker();
+    else if (isBets)    renderBets();
+    else if (isBracket) renderBracket();
     else render();
   }
 
