@@ -1439,7 +1439,7 @@
         <div class="bet-meta">
           <span class="bet-wager">Wager: $${bet.wager.toFixed(2)}</span>
           <span class="bet-payout">To Win: $${(bet.toPay - bet.wager).toFixed(2)}</span>
-          ${bet.boost ? `<span class="bet-boost">${bet.boost}</span>` : `<span style="margin-left:auto;font-size:0.65rem;color:var(--muted)">Cash Out: $${bet.cashOut.toFixed(2)}</span>`}
+          ${bet.boost ? `<span class="bet-boost">${bet.boost}</span>` : bet.cashOut != null ? `<span style="margin-left:auto;font-size:0.65rem;color:var(--muted)">Cash Out: $${bet.cashOut.toFixed(2)}</span>` : ''}
         </div>`;
 
       for (const r of legResults) {
