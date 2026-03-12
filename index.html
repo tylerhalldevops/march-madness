@@ -462,6 +462,74 @@
     .bet-card.all-winning .bet-header { background: #1b5e20; }
     .bet-card.all-losing  .bet-header { background: #b71c1c; }
 
+    /* ── BETS TICKER STRIP (All tab) ── */
+    #bets-ticker-strip {
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      height: 44px;
+      background: #111;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .bt-tag {
+      background: var(--gold);
+      color: #000;
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
+
+    .bt-tag span { font-size: 0.48rem; font-weight: 700; opacity: 0.7; }
+
+    .bt-scroll { flex: 1; overflow: hidden; display: flex; align-items: center; }
+
+    .bt-inner {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      animation: tk-scroll 22s linear infinite;
+    }
+
+    .bt-inner:hover { animation-play-state: paused; }
+
+    .bt-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 18px 0 14px;
+      border-right: 1px solid #333;
+    }
+
+    .bt-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .bt-dot.winning  { background: #4caf50; box-shadow: 0 0 5px rgba(76,175,80,0.8); }
+    .bt-dot.losing   { background: #f44336; box-shadow: 0 0 5px rgba(244,67,54,0.8); }
+    .bt-dot.upcoming { background: #888; }
+    .bt-dot.unknown  { background: #555; }
+
+    .bt-pick { font-size: 0.78rem; font-weight: 700; color: #fff; }
+    .bt-score { font-size: 0.68rem; color: #aaa; }
+    .bt-parlay-sep {
+      font-size: 0.65rem;
+      color: var(--gold);
+      font-weight: 900;
+      padding: 0 6px;
+      border-right: 1px solid #555;
+    }
+
     /* ── TABS ── */
     .tabs {
       display: flex;
@@ -796,6 +864,35 @@
     return { state: covering ? 'winning' : 'losing', score: scoreStr };
   }
 
+  function buildBetsTicker() {
+    const chips = [];
+    MY_BETS.forEach((bet, bi) => {
+      // Add a parlay label separator
+      chips.push(`<span class="bt-parlay-sep">PARLAY ${bi+1} · ${bet.odds}</span>`);
+      bet.legs.forEach(leg => {
+        const game = findGameForLeg(leg);
+        let dotCls = 'unknown', scoreStr = '—';
+        if (game) {
+          const r = legResult(leg, game);
+          dotCls = r.state;
+          scoreStr = r.score;
+        }
+        chips.push(`<div class="bt-chip">
+          <div class="bt-dot ${dotCls}"></div>
+          <span class="bt-pick">${leg.pick}</span>
+          <span class="bt-score">${scoreStr}</span>
+        </div>`);
+      });
+    });
+    const items = chips.join('');
+    return `<div id="bets-ticker-strip">
+      <div class="bt-tag">MY<span>BETS</span></div>
+      <div class="bt-scroll">
+        <div class="bt-inner">${items}${items}</div>
+      </div>
+    </div>`;
+  }
+
   function renderBets() {
     const el = document.getElementById('bets-view');
     let totalWager = 0, totalPotential = 0;
@@ -1015,6 +1112,7 @@
 
     let html = '';
     if (tab === 'all') {
+      html += buildBetsTicker();
       if (live.length)     html += `<div class="section-label">Live Now</div>${grid(live)}`;
       if (upcoming.length) html += `<div class="section-label">Upcoming Today</div>${grid(upcoming)}`;
       const todayFinal     = final.filter(e => e._day !== 'yesterday');
