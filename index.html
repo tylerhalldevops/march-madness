@@ -319,6 +319,149 @@
       font-weight: 600;
     }
 
+    /* ── MY BETS ── */
+    #bets-view {
+      padding: 10px;
+      background: var(--bg);
+      min-height: calc(100vh - 70px);
+    }
+
+    .bets-summary {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .bets-stat {
+      flex: 1;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 6px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    .bets-stat-val {
+      font-size: 1.1rem;
+      font-weight: 900;
+      display: block;
+    }
+
+    .bets-stat-lbl {
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .bet-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .bet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .bet-type {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .bet-odds {
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .bet-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+      background: #f5f7ff;
+      font-size: 0.72rem;
+    }
+
+    .bet-wager { color: var(--muted); font-weight: 600; }
+    .bet-payout { font-weight: 800; color: var(--blue); }
+    .bet-boost {
+      font-size: 0.6rem;
+      background: #7c4dff;
+      color: #fff;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-weight: 700;
+      margin-left: auto;
+    }
+
+    .bet-leg {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .bet-leg:last-child { border-bottom: none; }
+
+    .leg-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .leg-indicator.winning  { background: #2e7d32; box-shadow: 0 0 6px rgba(46,125,50,0.7); }
+    .leg-indicator.losing   { background: #c62828; box-shadow: 0 0 6px rgba(198,40,40,0.7); }
+    .leg-indicator.upcoming { background: #aaa; }
+    .leg-indicator.unknown  { background: #e0e0e0; border: 1px solid #ccc; }
+
+    .leg-info { flex: 1; min-width: 0; }
+
+    .leg-pick {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .leg-score {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .leg-status {
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .leg-status.winning  { color: #2e7d32; }
+    .leg-status.losing   { color: #c62828; }
+    .leg-status.upcoming { color: var(--blue2); }
+
+    .bet-card.all-winning .bet-header { background: #1b5e20; }
+    .bet-card.all-losing  .bet-header { background: #b71c1c; }
+
     /* ── TABS ── */
     .tabs {
       display: flex;
@@ -575,9 +718,11 @@
   <button class="tab"        id="tab-final"    onclick="setTab('final')">Final<span class="n" id="n-final"></span></button>
   <button class="tab"        id="tab-upcoming" onclick="setTab('upcoming')">Soon<span class="n" id="n-upcoming"></span></button>
   <button class="tab"        id="tab-ticker"   onclick="setTab('ticker')">Ticker</button>
+  <button class="tab"        id="tab-bets"     onclick="setTab('bets')">My Bets</button>
 </div>
 
 <div id="ticker-view"></div>
+<div id="bets-view" style="display:none"></div>
 
 <div id="content">
   <div class="spinner"></div>
@@ -586,6 +731,126 @@
 
 <script>
   let games = [], dkOdds = {}, tab = 'all', cd = 20, timer;
+
+  // ── MY BETS (DraftKings slips) ──────────────────────────
+  const MY_BETS = [
+    {
+      id: 1, type: '2-Pick Parlay', odds: '+241', wager: 25.00, toPay: 85.32, cashOut: 30.10,
+      legs: [
+        { pick: 'Ohio State +1.5', type: 'spread', spread: 1.5,  terms: ['ohio state','ohst','osu'] },
+        { pick: 'Kentucky -2.5',   type: 'spread', spread: -2.5, terms: ['kentucky','uk','ken'] },
+      ]
+    },
+    {
+      id: 2, type: '2-Pick Parlay', odds: '+1033', wager: 20.00, toPay: 226.60, cashOut: 10.14,
+      boost: '+20% Parlay Boost',
+      legs: [
+        { pick: 'Texas Tech ML', type: 'ml', terms: ['texas tech','ttu'] },
+        { pick: 'NC State ML',   type: 'ml', terms: ['nc state','ncst','ncs'] },
+      ]
+    },
+    {
+      id: 3, type: '2-Pick Parlay', odds: '+620', wager: 15.00, toPay: 108.00, cashOut: 13.50,
+      legs: [
+        { pick: 'Washington ML', type: 'ml', terms: ['washington','wash'] },
+        { pick: 'Miami FL ML',   type: 'ml', terms: ['miami fl','miami','mia'] },
+      ]
+    },
+  ];
+
+  function findGameForLeg(leg) {
+    return games.find(e => {
+      const comps = e.competitions?.[0]?.competitors || [];
+      return comps.some(c => {
+        const n = (c.team?.shortDisplayName || c.team?.displayName || c.team?.name || '').toLowerCase();
+        const a = (c.team?.abbreviation || '').toLowerCase();
+        return leg.terms.some(t => n.includes(t) || a === t);
+      });
+    });
+  }
+
+  function legResult(leg, game) {
+    const status = statusOf(game);
+    const comps = game.competitions?.[0]?.competitors || [];
+    const myComp = comps.find(c => {
+      const n = (c.team?.shortDisplayName || c.team?.displayName || c.team?.name || '').toLowerCase();
+      const a = (c.team?.abbreviation || '').toLowerCase();
+      return leg.terms.some(t => n.includes(t) || a === t);
+    });
+    if (!myComp) return { state: 'unknown', score: '' };
+    const oppComp = comps.find(c => c !== myComp);
+    const myScore  = parseInt(myComp.score)  || 0;
+    const oppScore = parseInt(oppComp?.score) || 0;
+    const myAbbr  = myComp.team?.abbreviation  || '';
+    const oppAbbr = oppComp?.team?.abbreviation || '';
+    const scoreStr = status === 'upcoming' ? `${myAbbr} vs ${oppAbbr} · ${clockOf(game)}` : `${myAbbr} ${myScore} – ${oppAbbr} ${oppScore} · ${clockOf(game)}`;
+
+    if (status === 'upcoming') return { state: 'upcoming', score: scoreStr };
+
+    let covering;
+    if (leg.type === 'ml') {
+      covering = myScore > oppScore;
+    } else {
+      covering = (myScore + leg.spread) > oppScore;
+    }
+    return { state: covering ? 'winning' : 'losing', score: scoreStr };
+  }
+
+  function renderBets() {
+    const el = document.getElementById('bets-view');
+    let totalWager = 0, totalPotential = 0;
+    let html = '';
+
+    for (const bet of MY_BETS) {
+      totalWager += bet.wager;
+      totalPotential += bet.toPay;
+
+      const legResults = bet.legs.map(leg => {
+        const game = findGameForLeg(leg);
+        if (!game) return { leg, state: 'unknown', score: 'Game not found' };
+        return { leg, ...legResult(leg, game) };
+      });
+
+      const states = legResults.map(r => r.state);
+      const allWin  = states.every(s => s === 'winning');
+      const anyLose = states.some(s => s === 'losing');
+      const cardCls = allWin ? 'all-winning' : anyLose ? 'all-losing' : '';
+
+      html += `<div class="bet-card ${cardCls}">
+        <div class="bet-header">
+          <span class="bet-type">${bet.type}</span>
+          <span class="bet-odds">${bet.odds}</span>
+        </div>
+        <div class="bet-meta">
+          <span class="bet-wager">Wager: $${bet.wager.toFixed(2)}</span>
+          <span class="bet-payout">To Win: $${(bet.toPay - bet.wager).toFixed(2)}</span>
+          ${bet.boost ? `<span class="bet-boost">${bet.boost}</span>` : `<span style="margin-left:auto;font-size:0.65rem;color:var(--muted)">Cash Out: $${bet.cashOut.toFixed(2)}</span>`}
+        </div>`;
+
+      for (const r of legResults) {
+        const ind = r.state === 'winning' ? 'winning' : r.state === 'losing' ? 'losing' : r.state === 'upcoming' ? 'upcoming' : 'unknown';
+        const lbl = r.state === 'winning' ? '✓ Covering' : r.state === 'losing' ? '✗ Losing' : r.state === 'upcoming' ? 'Up Next' : '—';
+        html += `<div class="bet-leg">
+          <div class="leg-indicator ${ind}"></div>
+          <div class="leg-info">
+            <div class="leg-pick">${r.leg.pick}</div>
+            <div class="leg-score">${r.score}</div>
+          </div>
+          <span class="leg-status ${ind}">${lbl}</span>
+        </div>`;
+      }
+
+      html += `</div>`;
+    }
+
+    const summaryHtml = `<div class="bets-summary">
+      <div class="bets-stat"><span class="bets-stat-val">$${totalWager.toFixed(2)}</span><span class="bets-stat-lbl">At Risk</span></div>
+      <div class="bets-stat"><span class="bets-stat-val">$${totalPotential.toFixed(2)}</span><span class="bets-stat-lbl">If All Win</span></div>
+      <div class="bets-stat"><span class="bets-stat-val">$${(totalPotential - totalWager).toFixed(2)}</span><span class="bets-stat-lbl">Net Profit</span></div>
+    </div>`;
+
+    el.innerHTML = summaryHtml + html;
+  }
   const ODDS_KEY_STORE = 'mm_odds_api_key';
   let oddsApiKey = localStorage.getItem(ODDS_KEY_STORE) || '';
 
@@ -768,6 +1033,7 @@
 
     document.getElementById('content').innerHTML = html;
     if (tab === 'ticker') renderTicker();
+    if (tab === 'bets')   renderBets();
   }
 
   async function fetchDkOdds() {
@@ -1020,13 +1286,16 @@
 
   function setTab(t) {
     tab = t;
-    ['all','live','final','upcoming','ticker'].forEach(x => {
+    ['all','live','final','upcoming','ticker','bets'].forEach(x => {
       document.getElementById('tab-'+x).classList.toggle('active', x === t);
     });
     const isTicker = t === 'ticker';
+    const isBets   = t === 'bets';
     document.getElementById('ticker-view').style.display = isTicker ? 'block' : 'none';
-    document.getElementById('content').style.display     = isTicker ? 'none'  : 'block';
+    document.getElementById('bets-view').style.display   = isBets   ? 'block' : 'none';
+    document.getElementById('content').style.display     = (!isTicker && !isBets) ? 'block' : 'none';
     if (isTicker) renderTicker();
+    else if (isBets) renderBets();
     else render();
   }
 
