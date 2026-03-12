@@ -573,7 +573,24 @@
       background: var(--orange);
       padding: 4px 10px;
       grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
     }
+
+    .section-label.collapsible:hover { filter: brightness(1.1); }
+
+    .section-chevron {
+      font-size: 0.7rem;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .section-label.collapsed .section-chevron { transform: rotate(-90deg); }
+
+    .section-body.collapsed { display: none; }
 
     /* ── GRID WRAPPER ── */
     .games-grid {
@@ -1110,15 +1127,26 @@
 
     const grid = games => `<div class="games-grid">${games.map(buildGame).join('')}</div>`;
 
+    // Collapsed state persists across renders
+    if (!window._collapsed) window._collapsed = {};
+    const section = (label, games, key, defaultCollapsed) => {
+      if (!(key in window._collapsed)) window._collapsed[key] = !!defaultCollapsed;
+      const collapsed = window._collapsed[key];
+      return `<div class="section-label collapsible${collapsed ? ' collapsed' : ''}" onclick="toggleSection('${key}')">
+        <span>${label}</span><span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body${collapsed ? ' collapsed' : ''}">${grid(games)}</div>`;
+    };
+
     let html = '';
     if (tab === 'all') {
       html += buildBetsTicker();
       if (live.length)     html += `<div class="section-label">Live Now</div>${grid(live)}`;
-      if (upcoming.length) html += `<div class="section-label">Upcoming Today</div>${grid(upcoming)}`;
+      if (upcoming.length) html += section('Upcoming Today', upcoming, 'upcoming', false);
       const todayFinal     = final.filter(e => e._day !== 'yesterday');
       const yesterdayFinal = final.filter(e => e._day === 'yesterday');
-      if (todayFinal.length)     html += `<div class="section-label">Final — Today</div>${grid(todayFinal)}`;
-      if (yesterdayFinal.length) html += `<div class="section-label">Final — Yesterday</div>${grid(yesterdayFinal)}`;
+      if (todayFinal.length)     html += section('Final — Today', todayFinal, 'final-today', false);
+      if (yesterdayFinal.length) html += section('Final — Yesterday', yesterdayFinal, 'final-yesterday', true);
     } else if (tab === 'final') {
       const todayFinal     = filtered.filter(e => e._day !== 'yesterday');
       const yesterdayFinal = filtered.filter(e => e._day === 'yesterday');
@@ -1378,6 +1406,12 @@
       if (!games.length)
         document.getElementById('content').innerHTML = '<div class="empty">⚠ Could not load scores</div>';
     }
+  }
+
+  function toggleSection(key) {
+    if (!window._collapsed) window._collapsed = {};
+    window._collapsed[key] = !window._collapsed[key];
+    render();
   }
 
   function manualRefresh() { cd = 20; fetchScores(); }
