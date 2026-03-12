@@ -786,6 +786,139 @@
       text-overflow: ellipsis;
     }
 
+    /* ── TOURNAMENT BOUND wall ── */
+    .tourney-wall {
+      margin: 10px 6px 16px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0d1440 0%, #1a237e 50%, #0d1440 100%);
+      border: 2px solid var(--gold);
+      box-shadow: 0 4px 20px rgba(249,168,37,0.2);
+    }
+
+    .tourney-wall-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 8px;
+      border-bottom: 1px solid rgba(249,168,37,0.3);
+    }
+
+    .tourney-wall-title {
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .tourney-wall-count {
+      background: var(--gold);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 3px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    .tourney-wall-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .tourney-team-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      position: relative;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 8px 4px 6px;
+      animation: badge-pop 0.4s ease-out both;
+    }
+
+    @keyframes badge-pop {
+      0%   { transform: scale(0.7); opacity: 0; }
+      70%  { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .tourney-team-badge:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: var(--gold);
+    }
+
+    .tourney-logo-wrap {
+      position: relative;
+      width: 36px; height: 36px;
+    }
+
+    .tourney-logo {
+      width: 36px; height: 36px;
+      object-fit: contain;
+    }
+
+    .tourney-logo-fallback {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .tourney-check {
+      position: absolute;
+      bottom: -3px; right: -3px;
+      background: #2e7d32;
+      color: #fff;
+      font-size: 0.5rem;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #0d1440;
+      font-weight: 900;
+    }
+
+    .tourney-team-name {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      line-height: 1.2;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tourney-conf-name {
+      font-size: 0.46rem;
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .tourney-empty {
+      padding: 20px;
+      text-align: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.75rem;
+    }
+
     .section-chevron {
       font-size: 0.7rem;
       transition: transform 0.2s;
@@ -1350,6 +1483,7 @@
       const yesterdayFinal = final.filter(e => e._day === 'yesterday');
       if (todayFinal.length)     html += section('Final — Today', todayFinal, 'final-today', true);
       if (yesterdayFinal.length) html += section('Final — Yesterday', yesterdayFinal, 'final-yesterday', true);
+      html += buildTourneyWall();
     } else if (tab === 'final') {
       const todayFinal     = filtered.filter(e => e._day !== 'yesterday');
       const yesterdayFinal = filtered.filter(e => e._day === 'yesterday');
@@ -1760,6 +1894,39 @@
     }
     html += `</div>`;
     return html;
+  }
+
+  function buildTourneyWall() {
+    const winners = getConferenceWinners();
+    let badges = '';
+    if (winners.length === 0) {
+      badges = `<div class="tourney-empty">🏀 Waiting for conference champions…</div>`;
+    } else {
+      winners.forEach((w, i) => {
+        const delay = (i * 0.06).toFixed(2);
+        const logoEl = w.logo
+          ? `<img class="tourney-logo" src="${w.logo}" alt="${w.abbr}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="tourney-logo-fallback" style="display:none">${w.abbr}</div>`
+          : `<div class="tourney-logo-fallback">${w.abbr}</div>`;
+        // Shorten conf label
+        const conf = w.conf.replace(/ Tournament.*$/i,'').replace(/^The /i,'');
+        badges += `<div class="tourney-team-badge" style="animation-delay:${delay}s">
+          <div class="tourney-logo-wrap">
+            ${logoEl}
+            <div class="tourney-check">✓</div>
+          </div>
+          <div class="tourney-team-name">${w.team}</div>
+          <div class="tourney-conf-name">${conf}</div>
+        </div>`;
+      });
+    }
+
+    return `<div class="tourney-wall">
+      <div class="tourney-wall-header">
+        <div class="tourney-wall-title">🎟️ Tournament Bound</div>
+        <div class="tourney-wall-count">${winners.length} / 68 IN</div>
+      </div>
+      <div class="tourney-wall-grid">${badges}</div>
+    </div>`;
   }
 
   function toggleSection(key) {
