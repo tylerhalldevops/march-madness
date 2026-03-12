@@ -1005,7 +1005,6 @@
   <button class="tab active" id="tab-all"      onclick="setTab('all')">All<span class="n" id="n-all"></span></button>
   <button class="tab"        id="tab-live"     onclick="setTab('live')">Live<span class="n" id="n-live"></span></button>
   <button class="tab"        id="tab-final"    onclick="setTab('final')">Final<span class="n" id="n-final"></span></button>
-  <button class="tab"        id="tab-upcoming" onclick="setTab('upcoming')">Soon<span class="n" id="n-upcoming"></span></button>
   <button class="tab"        id="tab-ticker"   onclick="setTab('ticker')">Ticker</button>
   <button class="tab"        id="tab-bets"     onclick="setTab('bets')">My Bets</button>
   <button class="tab"        id="tab-bracket"  onclick="setTab('bracket')">Bracket</button>
@@ -1310,20 +1309,18 @@
     const final    = games.filter(e => statusOf(e) === 'final');
     const upcoming = games.filter(e => statusOf(e) === 'upcoming');
 
-    document.getElementById('n-all').textContent      = games.length ? ` ${games.length}` : '';
-    document.getElementById('n-live').textContent     = live.length     ? ` ${live.length}` : '';
-    document.getElementById('n-final').textContent    = final.length    ? ` ${final.length}` : '';
-    document.getElementById('n-upcoming').textContent = upcoming.length ? ` ${upcoming.length}` : '';
+    document.getElementById('n-all').textContent   = games.length ? ` ${games.length}` : '';
+    document.getElementById('n-live').textContent  = live.length  ? ` ${live.length}`  : '';
+    document.getElementById('n-final').textContent = final.length ? ` ${final.length}` : '';
 
     const pill = document.getElementById('live-pill');
     if (live.length) { pill.style.display='flex'; document.getElementById('live-count').textContent=live.length; }
     else pill.style.display='none';
 
     let filtered;
-    if      (tab === 'live')     filtered = live;
-    else if (tab === 'final')    filtered = final;
-    else if (tab === 'upcoming') filtered = upcoming;
-    else                         filtered = games;
+    if      (tab === 'live')  filtered = live;
+    else if (tab === 'final') filtered = final;
+    else                      filtered = games;
 
     if (!filtered.length) {
       document.getElementById('content').innerHTML =
@@ -1348,10 +1345,10 @@
     if (tab === 'all') {
       html += buildBetsTicker();
       if (live.length)     html += `<div class="section-label">Live Now</div>${grid(live)}`;
-      if (upcoming.length) html += section('Upcoming Today', upcoming, 'upcoming', false);
+      if (upcoming.length) html += section('Upcoming Today', upcoming, 'upcoming', true);
       const todayFinal     = final.filter(e => e._day !== 'yesterday');
       const yesterdayFinal = final.filter(e => e._day === 'yesterday');
-      if (todayFinal.length)     html += section('Final — Today', todayFinal, 'final-today', false);
+      if (todayFinal.length)     html += section('Final — Today', todayFinal, 'final-today', true);
       if (yesterdayFinal.length) html += section('Final — Yesterday', yesterdayFinal, 'final-yesterday', true);
     } else if (tab === 'final') {
       const todayFinal     = filtered.filter(e => e._day !== 'yesterday');
@@ -1775,7 +1772,7 @@
 
   function setTab(t) {
     tab = t;
-    ['all','live','final','upcoming','ticker','bets','bracket'].forEach(x => {
+    ['all','live','final','ticker','bets','bracket'].forEach(x => {
       document.getElementById('tab-'+x).classList.toggle('active', x === t);
     });
     const isTicker  = t === 'ticker';
